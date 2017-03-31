@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BookStore.Models.Cart>
+﻿@model IEnumerable<BookStore.Models.CartViewModels>
 
 @{
     ViewBag.Title = "Index";
@@ -7,69 +7,68 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.subTotal)
+            <strong>Item Description</strong><br>
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.gst)
+            <strong>Quantity</strong><br>
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.discountPercent)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.discountAmount)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.deliveryCharge)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.collectionDay)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.totalPrice)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.dateOfPurchase)
+            <strong>Price</strong><br>
         </th>
         <th></th>
     </tr>
 
 @foreach (var item in Model) {
+
+    if (item.cartItems.Count == 0)
+    {
+        <tr><td><br><br><br><br><br>NO Cart Item!<br><br><br><br><br></td></tr>
+    }
+    else {
+    for (int i = 0; i < item.cartItems.Count; i++) {
+        var cartItemValue = item.cartItems[i];
+        var itemValue = item.items[i];
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.subTotal)
+            <img src="/@Html.DisplayFor(modelItem => itemValue.iImage)" alt="" height=150 width=100 /><br>
+            @Html.DisplayFor(modelItem => itemValue.iName)
+
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.gst)
+            @Html.DisplayFor(modelItem => cartItemValue.quantity)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.discountPercent)
+            @Html.DisplayFor(modelItem => cartItemValue.price)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.discountAmount)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.deliveryCharge)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.collectionDay)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.totalPrice)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.dateOfPurchase)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.cartID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.cartID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.cartID })
+            <!--Html.ActionLink("Edit", "Edit", new { id=item.cartID }) | -->
+            @Html.ActionLink("Delete", "RemoveFromCart", new { id= cartItemValue.itemID })
         </td>
     </tr>
-}
+    }
+    <tr>
+        <td><strong>SubTotal</strong></td>
+        <td><strong>Discount</strong></td>
+        <td><strong>GST</strong></td>
+        <td><strong>Total</strong></td>
+        </tr>
+    <tr> 
+         <td>$@Html.DisplayFor(modelItem => item.carts.subTotal)</td>
+        <td>$@Html.DisplayFor(modelItem => item.carts.discountAmount) - 
+        (@Html.DisplayFor(modelItem => item.carts.discountPercent) %)</td>
+        <td>@Html.DisplayFor(modelItem => item.carts.gst)</td>
+        <td><strong>$@Html.DisplayFor(modelItem => item.carts.totalPrice)</strong></td>
+         </tr>
 
+        <tr>
+            <td colspan="4" style="text-align: right;"><button type="button"onclick="location.href='Cart/OrderSummary';">Check Out</button></td>
+            </tr>
+    }
+}
 </table>
+
+

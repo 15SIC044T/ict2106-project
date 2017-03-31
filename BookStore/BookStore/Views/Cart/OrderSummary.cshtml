@@ -1,0 +1,17 @@
+﻿@model IEnumerable<BookStore.Models.CartItem>
+
+@{
+    ViewBag.Title = "OrderSummary";
+}
+
+<h2>OrderSummary</h2>
+
+<p>
+    You have check out your item successfully! <br>
+    Click here to view your order history ! <br>
+    @Html.ActionLink("Order History", "OrderHistory")
+</p>
+
+}
+
+</table>

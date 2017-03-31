@@ -9,8 +9,10 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BookStore.Models;
+using BookStore.DAL;
+using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace BookStore.Controllers 
+namespace BookStore.Controllers
 {
     [Authorize]
     public class AccountController : Controller
@@ -19,6 +21,7 @@ namespace BookStore.Controllers
         private ApplicationUserManager _userManager;
 
         public AccountController()
+            //: this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new BookStoreContext())))
         {
         }
 
@@ -26,6 +29,11 @@ namespace BookStore.Controllers
         {
             UserManager = userManager;
             SignInManager = signInManager;
+        }
+
+        public AccountController(UserManager<ApplicationUser> userManager)
+        {
+            this.userManager = userManager;
         }
 
         public ApplicationSignInManager SignInManager
@@ -79,6 +87,13 @@ namespace BookStore.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    ApplicationDbContext adb = new ApplicationDbContext();
+                    var user = adb.Users.Single(x => x.UserName == model.Username);
+
+                    Session["userID"] = user.Id;
+                    Session["currentCart"] = user.currentCart;
+                    Session["username"] = user.UserName;
+
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -426,6 +441,7 @@ namespace BookStore.Controllers
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
+        private UserManager<ApplicationUser> userManager;
 
         private IAuthenticationManager AuthenticationManager
         {

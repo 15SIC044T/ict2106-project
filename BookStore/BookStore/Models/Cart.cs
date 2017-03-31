@@ -9,34 +9,35 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookStore.Models
 {
-    [Table("Cart")]
+    [Table("Carts")]
     public class Cart
-    {
-        [Key]
-        public string cartID { get; set; }
+    { 
+        public int cartID { get; set; }
+
+        public string cartUserID { get; set; }
 
         [Display(Name = "SubTotal:")]
-        public decimal subTotal { get; set; }
+        public decimal? subTotal { get; set; }
 
         [Display(Name = "GST:")]
-        public decimal gst { get; set; }
+        public decimal? gst { get; set; }
 
         [Display(Name = "Discount Percent:")]
-        public decimal discountPercent { get; set; }
+        public decimal? discountPercent { get; set; }
 
         [Display(Name = "Discount Amount:")]
-        public decimal discountAmount { get; set; }
+        public decimal? discountAmount { get; set; }
 
         [Display(Name = "Delivery Charge:")]
-        public decimal deliveryCharge { get; set; }
+        public decimal? deliveryCharge { get; set; }
 
         [Display(Name = "Collection Day:")]
-        public int collectionDay { get; set; }
+        public int? collectionDay { get; set; }
 
         [Display(Name = "Total Price:")]
-        public decimal totalPrice { get; set; }
+        public decimal? totalPrice { get; set; }
 
         [Display(Name = "Date of Purchase:")]
-        public DateTime dateOfPurchase { get; set; }
+        public DateTime? dateOfPurchase { get; set; }
     }
 }

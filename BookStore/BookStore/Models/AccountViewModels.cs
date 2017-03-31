@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookStore.Models
 {
@@ -93,6 +94,7 @@ namespace BookStore.Models
         public string Email { get; set; }
 
         [DataType(DataType.Date)]
+        [Column(TypeName = "DateTime2")]
         [Display(Name = "Date of birth:")]
         [Required(ErrorMessage = "Date of birth is required")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
