@@ -10,7 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BookStore.Models;
 
-namespace BookStore.Controllers
+namespace BookStore.Controllers 
 {
     [Authorize]
     public class AccountController : Controller
