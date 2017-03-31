@@ -5,16 +5,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web; 
+using System.Web;
 
 namespace BookStore.Models
 {
 
 
-    [Table("User")]
+    [Table("Users")]
     public class User
     {
-        public int ID { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         public string Username { get; set; }
 
@@ -24,7 +25,7 @@ namespace BookStore.Models
 
         public string Email { get; set; }
 
-        public string uPremiumUser { get; set; }
+        public string Premiumuser { get; set; }
 
         public string Role { get; set; }
 

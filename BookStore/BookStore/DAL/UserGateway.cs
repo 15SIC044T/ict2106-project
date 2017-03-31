@@ -6,7 +6,7 @@ using System.Web;
 
 namespace BookStore.DAL
 {
-    public class UserGateway : DataGateway<Review>
+    public class UserGateway : DataGateway<User>
     {
     }
 }

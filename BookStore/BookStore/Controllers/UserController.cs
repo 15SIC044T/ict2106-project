@@ -224,9 +224,9 @@ namespace BookStore.Controllers
         public bool updateNewPassword(UserChangePassword cp)
         {
             bool result = false;
-            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\BookStore\App_Data\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
+            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
             {
-                string _sql = @"Update [dbo].[User] " +
+                string _sql = @"Update [dbo].[Users] " +
                       @"SET [Password]= @p WHERE [Username] = @u";
 
                 var cmd = new SqlCommand(_sql, cn);
@@ -254,10 +254,10 @@ namespace BookStore.Controllers
 
         public bool checkOldPassword(UserChangePassword cp)
         {
-            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\BookStore\App_Data\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
+            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
             {
                 bool result = false;
-                string _sql = @"SELECT * FROM [dbo].[User] " +
+                string _sql = @"SELECT * FROM [dbo].[Users] " +
                   @"WHERE [Username] = @u AND [Password] = @p";
 
                 var cmd = new SqlCommand(_sql, cn);
@@ -320,10 +320,10 @@ namespace BookStore.Controllers
         //It sends json result either true or false.
         public bool checkMailExists(string email)
         {
-            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\BookStore\App_Data\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
+            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
             {
                 bool result = false;
-                string _sql = @"SELECT * FROM [dbo].[User] " +
+                string _sql = @"SELECT * FROM [dbo].[Users] " +
                   @"WHERE [Email] = @u";
 
                 var cmd = new SqlCommand(_sql, cn);
@@ -371,14 +371,16 @@ namespace BookStore.Controllers
                     else
                     {
                         reg.Email = account.uEmail;
-                        reg.uPremiumUser = account.uPremiumUser.ToString();
+                        reg.Premiumuser = account.uPremiumUser.ToString();
                         reg.Role = "User";
 
-                        using (BookStoreContext db = new BookStoreContext())
+                        userGateway.Insert(reg);
+
+                        /*using (BookStoreContext db = new BookStoreContext())
                         {
                             db.Users.Add(reg);
                             db.SaveChanges();
-                        }
+                        }*/
                         ModelState.AddModelError("", account.uName + " successfully registered.");
                     }
                 }
@@ -410,7 +412,7 @@ namespace BookStore.Controllers
                     else
                     {
                         reg.Email = account.uEmail;
-                        reg.uPremiumUser = account.uPremiumUser.ToString();
+                        reg.Premiumuser = account.uPremiumUser.ToString();
                         reg.Role = "Admin";
 
                         using (BookStoreContext db = new BookStoreContext())
@@ -431,10 +433,10 @@ namespace BookStore.Controllers
 
         public bool IsValidAdmin(string _username, string _password)
         {
-            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\BookStore\App_Data\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
+            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
             {
                 bool result = false;
-                string _sql = @"SELECT [Username] FROM [dbo].[User] " +
+                string _sql = @"SELECT [Username] FROM [dbo].[Users] " +
                       @"WHERE [Username] = @u AND [Password] = @p AND [Role]= @a";
 
                 var cmd = new SqlCommand(_sql, cn);
@@ -473,10 +475,10 @@ namespace BookStore.Controllers
 
         public bool IsValidUser(string _username, string _password)
         {
-            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\BookStore\App_Data\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
+            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
             {
                 bool result = false;
-                string _sql = @"SELECT [Username] FROM [dbo].[User] " +
+                string _sql = @"SELECT [Username] FROM [dbo].[Users] " +
                       @"WHERE [Username] = @u AND [Password] = @p AND [Role]= @a";
 
                 var cmd = new SqlCommand(_sql, cn);
@@ -537,10 +539,10 @@ namespace BookStore.Controllers
 
         public User checkEmailValid (String email)
         {
-            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\BookStore\App_Data\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
+            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
             {
                 User u = new User();
-                string _sql = @"SELECT * FROM [dbo].[User] " +
+                string _sql = @"SELECT * FROM [dbo].[Users] " +
                   @"WHERE [Email] = @u";
 
                 var cmd = new SqlCommand(_sql, cn);
@@ -555,12 +557,12 @@ namespace BookStore.Controllers
                     var reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        u.ID = (int)reader[0];
+                        u.Id = (int)reader[0];
                         u.Username = reader[1].ToString();
                         u.Password = reader[2].ToString();
                         u.Birthdate = (DateTime)reader[3];
                         u.Email = reader[4].ToString();
-                        u.uPremiumUser = reader[5].ToString();
+                        u.Premiumuser = reader[5].ToString();
                         u.Role = reader[6].ToString();
                         reader.Dispose();
                         cmd.Dispose();
@@ -628,9 +630,9 @@ namespace BookStore.Controllers
         public bool UpdateUserProfile(User u)
         {
             bool result = false;
-            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\BookStore\App_Data\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
+            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
             {
-                string _sql = @"Update [dbo].[User] " +
+                string _sql = @"Update [dbo].[Users] " +
                       @"SET [Password]= @p WHERE [Email] = @u";
 
                 var cmd = new SqlCommand(_sql, cn);
