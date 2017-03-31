@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Mvc;
 
 //Added
-using System.Web.Mvc;
 using System.Data;
 using BookStore.DAL;
 using BookStore.Models;
