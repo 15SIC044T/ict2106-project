@@ -1,0 +1,4 @@
+﻿ALTER TABLE CartItem
+drop CONSTRAINT FK_CartItem_CartID
+ALTER TABLE CartItem
+ADD CONSTRAINT [PK_dbo.Cart] FOREIGN KEY (FK_CartItem_CartID) REFERENCES Cart (cartID)

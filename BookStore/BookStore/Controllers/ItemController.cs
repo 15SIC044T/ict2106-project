@@ -5,13 +5,13 @@ using System.Web;
 using System.Web.Mvc;
 
 //Added
-using System.Web.Mvc;
 using System.Data;
 using BookStore.DAL;
 using BookStore.Models;
 using System.Net;
 using PagedList;
 using System.Data.Entity.Infrastructure;
+using System.IO;
 
 namespace BookStore.Controllers
 {
@@ -96,17 +96,31 @@ namespace BookStore.Controllers
         }
 
         // POST: Item/Create
+        //[Route("Create")]
         [HttpPost]
-        public ActionResult Create([Bind(Include = "Id,iName,iDescription,iImage,iPrice,iQuantity,iCategory")] Item item)
+        public ActionResult Create([Bind(Include = "itemID,iName,iDescription,iImage,iPrice,iQuantity,iCategory")] Item item, HttpPostedFileBase file)
         {
             if (ModelState.IsValid)
             {
-                itemGateway.Insert(item);
-                return RedirectToAction("Index");
+                if (file.ContentLength > 0)
+                {
+                    var fileName = Path.GetFileName(file.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Uploads"), fileName);
+                    var pathString = Path.Combine("Uploads/", fileName);
+                    file.SaveAs(path);
+
+                    item.iImage = pathString;
+
+                    itemGateway.Insert(item);
+                    return RedirectToAction("Index");
+
+                }
+                else
+                    return RedirectToAction("Index"); 
             }
 
             return View(item);
-        }
+        } 
 
         // GET: Item/Edit/5
         public ActionResult Edit(int? id)
@@ -125,39 +139,20 @@ namespace BookStore.Controllers
 
         // POST: Item/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, [Bind(Include = "Id,iName,iDescription,iImage,iPrice,iQuantity,iCategory")] Item item)
+        public ActionResult Edit(int id, [Bind(Include = "itemID,iName,iDescription,iImage,iPrice,iQuantity,iCategory")] Item item, HttpPostedFileBase file)
         {
             if (ModelState.IsValid)
-            {
-                using (var context = new BookStoreContext())
-                {
-                    var saveValue = context.Items.Find(id);
-                    saveValue.iName = item.iName;
-                    saveValue.iDescription = item.iDescription;
-                    saveValue.iImage = item.iImage;
-                    saveValue.iPrice = item.iPrice;
-                    saveValue.iQuantity = item.iQuantity;
-                    saveValue.iCategory = item.iCategory;
+            { if (file.ContentLength > 0)
+                    { 
+                        var fileName = Path.GetFileName(file.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Uploads"), fileName); 
+                    var pathString = "Uploads/" + fileName;
+                    file.SaveAs(path);
 
-                    bool saveFailed;
-                    do
-                    {
-                        saveFailed = false;
+                        item.iImage = pathString;  
 
-                        try
-                        {
-                            context.SaveChanges();
-                        }
-                        catch (DbUpdateConcurrencyException ex)
-                        {
-                            saveFailed = true;
-
-                            // Update the values of the entity that failed to save from the store 
-                            ex.Entries.Single().Reload();
-                        }
-
-                    } while (saveFailed);
-                }
+                        itemGateway.Update(item);
+                    } 
 
                 //itemGateway.Update(item);
                 return RedirectToAction("Index");
@@ -186,6 +181,9 @@ namespace BookStore.Controllers
         {
             Item item = itemGateway.Delete(id);
             return RedirectToAction("Index");
-        }
+        } 
     }
 }
+
+// Image Upload
+// http://haacked.com/archive/2010/07/16/uploading-files-with-aspnetmvc.aspx/

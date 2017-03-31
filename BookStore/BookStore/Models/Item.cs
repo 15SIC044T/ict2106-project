@@ -7,12 +7,15 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PagedList;
+using System.Web.Mvc;
 
 namespace BookStore.Models
 {
     [Table("Item")]
     public class Item
     {
+        [HiddenInput(DisplayValue = false)]
+        [Key]
         public int itemID { get; set; }
 
         [Display(Name = "Name:")]
@@ -36,7 +39,7 @@ namespace BookStore.Models
 
         [Display(Name = "Quantity:")]
         [Required(ErrorMessage = "Item Quantity is required")]
-        public string iQuantity { get; set; }
+        public int iQuantity { get; set; }
 
     }
 }

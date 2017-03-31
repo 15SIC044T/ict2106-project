@@ -51,6 +51,7 @@ namespace BookStore.DAL
 
         public void Update(T obj)
         {
+            //data.Attach(obj);
             db.Entry(obj).State = EntityState.Modified;
             db.SaveChanges();
         }

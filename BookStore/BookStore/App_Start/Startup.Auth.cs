@@ -63,6 +63,14 @@ namespace BookStore
             //    ClientId = "",
             //    ClientSecret = ""
             //});
+
+            app.UseFacebookAuthentication(
+               appId: "902767976493239",
+               appSecret: "7c84e4a1da340f799e622d9b425135d6");
+
+            app.UseGoogleAuthentication(
+                clientId: "167541776654-jau6f4c2pov8hj437fonu32pc3nn6lqj.apps.googleusercontent.com",
+                clientSecret: "jioyZbwnXnxf9wnYAJH7O2fl");
         }
     }
 }

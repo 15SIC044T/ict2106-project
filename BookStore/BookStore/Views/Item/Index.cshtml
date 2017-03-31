@@ -15,6 +15,10 @@
     <b> Search Option: </b><text>Subject</text> @Html.TextBox("search") <input type="submit" name="submit" value="Search" />
 }
 
+<!-- Check the role of the user
+    If the role of the user is Admin, DISPLAY THIS 
+    -->
+
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
@@ -59,7 +63,8 @@
                     @Html.DisplayFor(modelItem => item.iDescription)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.iImage)
+                    <img src="/@Html.DisplayFor(modelItem => item.iImage)" alt="" height=150 width=100 />
+                    <!--Html.DisplayFor(modelItem => item.iImage)-->
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.iPrice)
@@ -70,7 +75,8 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.iQuantity)
                 </td>
-                <td>
+                <td> 
+                    @Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.itemID }, null) |
                     @Html.ActionLink("Edit", "Edit", new { id = item.itemID }) |
                     @Html.ActionLink("Details", "Details", new { id = item.itemID }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.itemID })
@@ -87,3 +93,9 @@
     option = Request.QueryString["option"],
     search = Request.QueryString["search"]
 }))
+
+
+<!-- Check the role of the user
+    If the role of the user is Normal/Premium User, DISPLAY THIS
+    -->
+
