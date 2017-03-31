@@ -1,0 +1,56 @@
+﻿@model BookStore.Models.Review
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Review</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.reviewerID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.reviewerID)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.itemID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.itemID)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.reviewDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.reviewDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.reviewDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.reviewDescription)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.reviewRating)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.reviewRating)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.reviewID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -1,0 +1,67 @@
+﻿@model BookStore.Models.Item
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Item</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.iName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.iName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.iDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.iDescription)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.iImage)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.iImage)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.iPrice)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.iPrice)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.iCategory)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.iCategory)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.iQuantity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.iQuantity)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.itemID }) |
+    @Html.ActionLink("Back to List", "Index") |
+    @Html.ActionLink("See Reviews","Index","Review", new {itemID = Model.itemID}, null)
+</p>
