@@ -1,0 +1,52 @@
+﻿
+@model BookStore.Models.UserLogin
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+
+@using (Html.BeginForm("Login", "User", FormMethod.Post))
+{
+    @Html.ValidationSummary(true, "Login failed. Check your login details.");
+    <div>
+        <fieldset>
+            <legend>Login</legend>
+            <div class="editor-label">
+                @Html.LabelFor(u => u.UserName)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(u => u.UserName)
+                @Html.ValidationMessageFor(u => u.UserName)
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(u => u.Password)
+            </div>
+            <div class="editor-field">
+                @Html.PasswordFor(u => u.Password)
+                @Html.ValidationMessageFor(u => u.Password)
+            </div>
+            <div class="editor-label">
+                @Html.CheckBoxFor(u => u.RememberMe)
+                @Html.LabelFor(u => u.RememberMe)
+            </div>
+            <br />
+            @Html.LabelFor(model => model.Captcha)
+            <a href="@Url.Action("Index")">
+                <img alt="Captcha" src="@Url.Action("CaptchaImage")" style="" />
+            </a> 
+            @Html.EditorFor(model => model.Captcha)
+            @Html.ValidationMessageFor(model => model.Captcha)
+            <br />
+            <br />
+            <input type="submit" value="Log In" />
+            <br />
+            <br />
+            <p>
+                Forgotten password. Click @Html.ActionLink("Recovery Password", "ViewEmail", "User")!
+                
+            </p>
+
+        </fieldset>
+    </div>
+}

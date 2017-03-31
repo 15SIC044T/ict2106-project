@@ -1,0 +1,27 @@
+﻿@model BookStore.Models.User
+
+@{
+    ViewBag.Title = "Email";
+}
+
+<h2>Password Recovery</h2>
+
+ 
+@using (Html.BeginForm("SendEmail", "User", FormMethod.Post))
+{
+    @Html.ValidationSummary(true, "Login failed. Check your login details.");
+    <div>
+        <fieldset>
+            <div class="editor-label">
+                @Html.LabelFor(u => u.Email)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(u => u.Email)
+                @Html.ValidationMessageFor(u => u.Email)
+            </div>
+            <br />
+            <input type="submit" value="Submit" />
+
+        </fieldset>
+    </div>
+}

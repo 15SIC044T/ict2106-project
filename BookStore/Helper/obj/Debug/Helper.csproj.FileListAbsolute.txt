@@ -1,0 +1,4 @@
+C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\Helper\bin\Debug\Helper.dll
+C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\Helper\bin\Debug\Helper.pdb
+C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\Helper\obj\Debug\Helper.dll
+C:\Users\EMILY\Desktop\YR2016_TRIMESTER2\BookStore4\BookStore\Helper\obj\Debug\Helper.pdb

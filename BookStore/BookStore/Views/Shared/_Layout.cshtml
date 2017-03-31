@@ -24,12 +24,26 @@
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Item", "Index", "Item")</li>
                     <li>@Html.ActionLink("Cart", "Index", "Cart")</li>
+
+                    @if (HttpContext.Current.User.Identity.IsAuthenticated)
+                    {
+                        <li>@Html.ActionLink("Change Password", "ChangePassw", "User")</li>
+                        <li>
+                            @Html.ActionLink("Sign Out", "Logout", "User")
+                        </li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Register", "Register", "User")</li>
+                        <li>@Html.ActionLink("Sign In", "Index", "User")</li>
+                    }
                 </ul>
-                @Html.Partial("_LoginPartial")
             </div>
         </div>
     </div>
     <div class="container body-content">
+        @if (HttpContext.Current.User.Identity.IsAuthenticated)
+        {<strong>Welcome:</strong> @Html.Encode(User.Identity.Name)}
         @RenderBody()
         <hr />
         <footer>
