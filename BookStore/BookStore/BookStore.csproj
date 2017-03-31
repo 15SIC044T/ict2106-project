@@ -216,6 +216,10 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\BookStoreContext.mdf" />
+    <Content Include="App_Data\BookStoreContext_log.ldf">
+      <DependentUpon>BookStoreContext.mdf</DependentUpon>
+    </Content>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\PagedList.css" />
@@ -237,6 +241,8 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Uploads\TLS.jpg" />
+    <Content Include="Uploads\TSP.jpg" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -280,7 +286,6 @@
     <Content Include="Views\Cart\OrderSummary.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Content\themes\User\" />
     <Folder Include="Views\User\" />
   </ItemGroup>
