@@ -23,11 +23,13 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Item", "Index", "Item")</li>
-                    <li>@Html.ActionLink("Cart", "Index", "Cart")</li>
+                    
 
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("Change Password", "ChangePassw", "User")</li>
+                        <li>@Html.ActionLink("Cart", "Index", "Cart")</li>
+                        <li>@Html.ActionLink("Order History", "OrderHistory", "Cart")</li>
+<li>@Html.ActionLink("Change Password", "ChangePassw", "User")</li>
                         <li>
                             @Html.ActionLink("Sign Out", "Logout", "User")
                         </li>

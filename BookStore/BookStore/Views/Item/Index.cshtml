@@ -12,7 +12,7 @@
 @using (Html.BeginForm("Index", "Item", FormMethod.Get))
 {
     //the following are search options
-    <b> Search Option: </b><text>Subject</text> @Html.TextBox("search") <input type="submit" name="submit" value="Search" />
+    <b> Search by </b><text>Name: </text> @Html.TextBox("search") <input type="submit" name="submit" value="Search" />
 }
 
 <!-- Check the role of the user

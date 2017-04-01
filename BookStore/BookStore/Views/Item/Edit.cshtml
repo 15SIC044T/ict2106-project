@@ -6,8 +6,9 @@
 
 <h2>Edit</h2>
 
-
-@using (Html.BeginForm("Edit", "Item", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@if (System.Web.HttpContext.Current.User.IsInRole("Admin"))
+{
+using (Html.BeginForm("Edit", "Item", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     
@@ -72,6 +73,11 @@
             </div>
         </div>
     </div>
+    }
+}
+else
+{
+    <p>You do not have the permission to view this page!</p>
 }
 
 <div>

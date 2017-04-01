@@ -108,6 +108,8 @@ namespace BookStore.Controllers
                             Session["currentCart"] = userObj.currentCart;
                             Session["username"] = userObj.Username;
                             Session["Role"] = userObj.Role;
+                            Roles.CreateRole(userObj.Role);
+                            Roles.AddUserToRole(userObj.Username, userObj.Role);
 
                             //redirect to admin page
                             return RedirectToAction("Index", "Home");
@@ -116,7 +118,14 @@ namespace BookStore.Controllers
                         {
                             //set form authentication to user true
                             FormsAuthentication.SetAuthCookie(user.UserName, user.RememberMe);
+                            var userObj = db.Users.Single(x => x.Username == user.UserName);
 
+                            Session["userID"] = userObj.Id;
+                            Session["currentCart"] = userObj.currentCart;
+                            Session["username"] = userObj.Username;
+                            Session["Role"] = userObj.Role;
+                            Roles.CreateRole(userObj.Role);
+                            Roles.AddUserToRole(userObj.Username, userObj.Role);
 
                             //redirect to user page
                             return RedirectToAction("Index", "Item");

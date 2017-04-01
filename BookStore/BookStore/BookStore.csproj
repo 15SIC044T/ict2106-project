@@ -385,6 +385,8 @@
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\User\RegisterAdminPage.cshtml" />
     <Content Include="Views\User\RegisterPage.cshtml" />
+    <Content Include="Views\Cart\OrderHistory.cshtml" />
+    <Content Include="Views\Cart\OrderDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\themes\User\" />

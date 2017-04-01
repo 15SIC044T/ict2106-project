@@ -1,0 +1,71 @@
+﻿@model IEnumerable<BookStore.Models.CartViewModels>
+
+@{
+    ViewBag.Title = "Order Details";
+}
+
+<h2>Order Details - Order @ViewBag.ID</h2>
+
+<p>
+</p>
+<table class="table">
+    <tr>
+        <th>
+            <strong>Item Description</strong><br>
+        </th>
+        <th>
+            <strong>Quantity</strong><br>
+        </th>
+        <th>
+            <strong>Price</strong><br>
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+
+        if (item.cartItems.Count == 0)
+        {
+            <tr><td><br><br><br><br><br>NO Cart Item!<br><br><br><br><br></td></tr>
+        }
+        else
+        {
+            for (int i = 0; i < item.cartItems.Count; i++)
+            {
+                var cartItemValue = item.cartItems[i];
+                var itemValue = item.items[i];
+                <tr>
+                    <td>
+                        <img src="/@Html.DisplayFor(modelItem => itemValue.iImage)" alt="" height=150 width=100 /><br>
+                        @Html.DisplayFor(modelItem => itemValue.iName)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => cartItemValue.quantity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => cartItemValue.price)
+                    </td>
+                    <td> 
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td><strong>SubTotal</strong></td>
+                <td><strong>Discount</strong></td>
+                <td><strong>GST</strong></td>
+                <td><strong>Total</strong></td>
+            </tr>
+            <tr>
+                <td>$@Html.DisplayFor(modelItem => item.carts.subTotal)</td>
+                <td>
+                    $@Html.DisplayFor(modelItem => item.carts.discountAmount) -
+                    (@Html.DisplayFor(modelItem => item.carts.discountPercent) %)
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.carts.gst)</td>
+                <td><strong>$@Html.DisplayFor(modelItem => item.carts.totalPrice)</strong></td>
+            </tr> 
+        }
+    }
+</table>

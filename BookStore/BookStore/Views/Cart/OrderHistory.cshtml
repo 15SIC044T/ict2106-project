@@ -1,0 +1,79 @@
+﻿@model IEnumerable<BookStore.Models.Cart>
+
+@{
+    ViewBag.Title = "OrderHistory";
+}
+
+<h2>OrderHistory</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.cartID)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.subTotal)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.gst)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.discountPercent)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.discountAmount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.deliveryCharge)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.collectionDay)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.totalPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.dateOfPurchase)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.cartUserID)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.subTotal)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.gst)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.discountPercent)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.discountAmount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.deliveryCharge)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.collectionDay)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.totalPrice)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.dateOfPurchase)
+        </td>
+        <td>
+            @Html.ActionLink("Order Details", "OrderDetails", new { existingCartID = item.cartID }) | 
+        </td>
+    </tr>
+}
+
+</table>

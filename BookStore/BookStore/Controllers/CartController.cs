@@ -149,7 +149,7 @@ namespace BookStore.Controllers
         {
            
             if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-            {
+            { 
                 Session["username"] = System.Web.HttpContext.Current.User.Identity.Name;
                 var userObj = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
 
@@ -161,9 +161,7 @@ namespace BookStore.Controllers
          
         [Authorize]
         public ActionResult OrderSummary()
-        {
-            bool itemPurchase = false;
-            //ApplicationUser user = updateSession();
+        { 
             updateSession();
 
             //Get a MAIN single cart ID
@@ -205,35 +203,70 @@ namespace BookStore.Controllers
             cartData.carts.subTotal = Convert.ToDouble(db.CartItems.AsEnumerable().Where(x => x.cartID == currentCartID).Sum(x => x.price));
             cartData.carts.totalPrice = cartData.carts.subTotal + (cartData.carts.subTotal * cartData.carts.gst / 100 * cartData.carts.discountPercent / 100);
             cartData.carts.dateOfPurchase = DateTime.Now;
-
-            //All item has the correct quantity to purchase
-            if (itemPurchase)
-            {
+             
                 //Update carts value to existing cart
                 cartGateway.Update(cartData.carts);
 
                 //Clear current user shopping cart
                 Session["currentCart"] = 0;
                 var updateUser = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
-                updateUser.currentCart = currentCartID;
-                userGateway.Update(updateUser);
-            }
-            else
-            {
-                //show which item is not available to purchase
-
-            }
+                updateUser.currentCart = 0;
+                userGateway.Update(updateUser); 
 
             viewModel.Add(cartData); 
             return View();
         }
 
         [Authorize]
-        public ActionResult OrderList()
+        public ActionResult OrderHistory()
         {
+            updateSession();
+            string currentUserID = Session["userID"].ToString();
+            List<Cart> cartData = db.Carts.Where(x => x.cartUserID == currentUserID && x.dateOfPurchase != null).ToList();
 
-            return View();
+            return View(cartData);
 
+        }
+
+        [Authorize]
+        public ActionResult OrderDetails(int? existingCartID)
+        {
+            updateSession();
+            ViewBag.ID = existingCartID;
+
+            //Get all the cart items    
+            List<CartItem> cartItemList = db.CartItems.Where(x => x.cartID == existingCartID).ToList();
+
+            List<Item> itemList = new List<Item>();
+            List<bool> checkItemAvailable = new List<bool>();
+
+            //Get all the item details and store it in the list;
+            IIterator<CartItem> iter = new IteratorGeneric<CartItem>(cartItemList);
+            while (!iter.IsDone())
+            {
+                int? newItemID = iter.current().itemID;
+                if (newItemID != null)
+                {
+                    Item item = db.Items.SingleOrDefault(x => x.itemID == newItemID);
+                    itemList.Add(item);
+
+                    iter.Next();
+                }
+            }
+
+            //Create a new model to contain all the data.. 
+            List<CartViewModels> viewModel = new List<CartViewModels>();
+             
+            var cartData = new CartViewModels();
+            var cartDataCarts = new Cart();
+            cartDataCarts = db.Carts.SingleOrDefault(x => x.cartID == existingCartID);
+            cartData.cartItems = cartItemList;
+            cartData.items = itemList;
+            cartData.carts = cartDataCarts;
+
+            viewModel.Add(cartData);
+
+            return View(viewModel);
         }
 
     }

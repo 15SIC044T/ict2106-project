@@ -5,8 +5,9 @@
 }
 
 <h2>Login</h2>
-
-@using (Html.BeginForm("Login", "User", FormMethod.Post))
+ 
+@if (System.Web.HttpContext.Current.User.Identity.Name.ToString() == "") { 
+using (Html.BeginForm("Login", "User", FormMethod.Post))
 {
     @Html.ValidationSummary(true, "Login failed. Check your login details.");
     <div>
@@ -49,4 +50,9 @@
 
         </fieldset>
     </div>
+}
+}
+else
+{
+<p>You have already Logged in!</p>
 }
