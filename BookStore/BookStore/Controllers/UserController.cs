@@ -391,29 +391,37 @@ namespace BookStore.Controllers
                     reg.Password = Helpers.SHA.Encode(account.uPwd);
 
                     bool result = checkUserExists(account.uName);
+                    bool resultemail = checkMailExists(account.uEmail);
                     if (result == true)
                     {
                         ModelState.AddModelError("", account.uName + " already taken.");
                     }
                     else
-                    {
-                        reg.Email = account.uEmail;
-                        reg.Premiumuser = account.uPremiumUser;
-                        
-
-                        if (account.uPremiumUser)
+                        if (resultemail == true)
                         {
-                            reg.Role = "PremiumUser"; 
-                            userGateway.Insert(reg);
+                            ModelState.AddModelError("", account.uEmail + " already taken.");
                         }
-                        else {
-                            reg.Role = "BasicUser"; 
-                            userGateway.Insert(reg);
-                        }
+                    else
+                        if (result && resultemail)
+                        {
+                            reg.Email = account.uEmail;
+                            reg.Premiumuser = account.uPremiumUser;
 
-                        ModelState.AddModelError("", account.uName + " successfully registered.");
+
+                            if (account.uPremiumUser)
+                            {
+                                reg.Role = "PremiumUser";
+                                userGateway.Insert(reg);
+                            }
+                            else
+                            {
+                                reg.Role = "BasicUser";
+                                userGateway.Insert(reg);
+                            }
+
+                            ModelState.AddModelError("", account.uName + " successfully registered.");
+                        }
                     }
-                }
                 catch (Exception e)
                 {
                     ViewBag.Message = e.ToString();
@@ -566,40 +574,8 @@ namespace BookStore.Controllers
 
         public User checkEmailValid (String email)
         {
-            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
-            {
-                User u = new User();
-                string _sql = @"SELECT * FROM [dbo].[Users] " +
-                  @"WHERE [Email] = @u";
-
-                var cmd = new SqlCommand(_sql, cn);
-                cmd.Parameters
-                            .Add(new SqlParameter("@u", SqlDbType.NVarChar))
-                            .Value = email;
-
-                cn.Open();
-                try
-                {
-                    //didnt read
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        if (reader[6].ToString().Equals("PremiumUser"))
-                        u.Id = (int)reader[0];
-                        u.Username = reader[1].ToString();
-                        u.Password = reader[2].ToString();
-                        u.Birthdate = (DateTime)reader[3];
-                        u.Email = reader[4].ToString();
-                        u.Premiumuser = (bool)reader[5];
-                        u.Role = reader[6].ToString();
-                        reader.Dispose();
-                        cmd.Dispose();
-                    }
-                }
-                catch (Exception ex) {  }
-
-                return u;
-            }
+            User userObj = db.Users.Single(x => x.Email == email);
+            return userObj; 
         }
 
         public void Execute(String usremail)
