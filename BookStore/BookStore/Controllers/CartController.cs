@@ -19,17 +19,14 @@ namespace BookStore.Controllers
         private UserGateway userGateway = new UserGateway();
         private CartGateway cartGateway = new CartGateway();
         private CartItemGateway cartItemGateway = new CartItemGateway();
-        private BookStoreContext db = new BookStoreContext();
-        //private ApplicationDbContext adb = new ApplicationDbContext();
-
-        [Authorize(Roles = "User, PremiumUser, BasicUser, Admin")]
+        private BookStoreContext db = new BookStoreContext(); 
+         
+        [Authorize]
         public ActionResult Index()
-        {
-            //ApplicationUser user = updateSession();
+        { 
             updateSession();
 
-            //Create a new cart if the cart is empty
-            //if (string.IsNullOrEmpty(Session["currentCart"].ToString()))
+            //Create a new cart if the cart is empty 
             if (Convert.ToInt32(Session["currentCart"]) == 0)
             {
                 //Create a new cart
@@ -56,6 +53,7 @@ namespace BookStore.Controllers
             List<CartItem> cartItemList = db.CartItems.Where(x => x.cartID == currentCartID).ToList();
 
             List<Item> itemList = new List<Item>();
+            List<bool> checkItemAvailable = new List<bool>();
              
             //Get all the item details and store it in the list;
             IIterator<CartItem> iter = new IteratorGeneric<CartItem>(cartItemList);
@@ -64,7 +62,9 @@ namespace BookStore.Controllers
                 int? newItemID = iter.current().itemID; 
                 if (newItemID != null)
                 {
-                    itemList.Add(db.Items.SingleOrDefault(x => x.itemID == newItemID));
+                    Item item = db.Items.SingleOrDefault(x => x.itemID == newItemID);
+                    itemList.Add(item);
+                    
                     iter.Next();
                 }
             }
@@ -91,8 +91,8 @@ namespace BookStore.Controllers
             return View(viewModel);
 
         }
-
-        [Authorize(Roles = "User, PremiumUser, BasicUser, Admin")]
+         
+        [Authorize]
         public ActionResult AddToCart(int id)
         {
             //ApplicationUser user = updateSession(); 
@@ -127,8 +127,8 @@ namespace BookStore.Controllers
             return RedirectToAction("Index");
         }
         //
-        // AJAX: /ShoppingCart/RemoveFromCart/5 
-        [Authorize(Roles = "User, PremiumUser, BasicUser, Admin")]
+        // AJAX: /ShoppingCart/RemoveFromCart/5  
+        [Authorize]
         public ActionResult RemoveFromCart(int id)
         {
             //ApplicationUser user = updateSession(); 
@@ -158,11 +158,11 @@ namespace BookStore.Controllers
                 Session["Role"] = userObj.Role; 
             } 
         }
-
-        [Authorize(Roles = "User, PremiumUser, BasicUser, Admin")]
+         
+        [Authorize]
         public ActionResult OrderSummary()
         {
-
+            bool itemPurchase = false;
             //ApplicationUser user = updateSession();
             updateSession();
 
@@ -185,6 +185,10 @@ namespace BookStore.Controllers
                 }
             }
 
+            //check all item is available for purchase
+
+
+
             //Create a new model to contain all the data..
 
             List<CartViewModels> viewModel = new List<CartViewModels>();
@@ -202,17 +206,34 @@ namespace BookStore.Controllers
             cartData.carts.totalPrice = cartData.carts.subTotal + (cartData.carts.subTotal * cartData.carts.gst / 100 * cartData.carts.discountPercent / 100);
             cartData.carts.dateOfPurchase = DateTime.Now;
 
-            //Update carts value to existing cart
-            cartGateway.Update(cartData.carts);
+            //All item has the correct quantity to purchase
+            if (itemPurchase)
+            {
+                //Update carts value to existing cart
+                cartGateway.Update(cartData.carts);
 
-            //Clear current user shopping cart
-            Session["currentCart"] = 0;
-            var updateUser = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
-            updateUser.currentCart = currentCartID;
-            userGateway.Update(updateUser); 
+                //Clear current user shopping cart
+                Session["currentCart"] = 0;
+                var updateUser = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
+                updateUser.currentCart = currentCartID;
+                userGateway.Update(updateUser);
+            }
+            else
+            {
+                //show which item is not available to purchase
+
+            }
 
             viewModel.Add(cartData); 
             return View();
+        }
+
+        [Authorize]
+        public ActionResult OrderList()
+        {
+
+            return View();
+
         }
 
     }
