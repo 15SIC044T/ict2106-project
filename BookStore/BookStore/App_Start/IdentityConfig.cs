@@ -16,6 +16,8 @@ namespace BookStore
 {
     public class EmailService : IIdentityMessageService
     {
+        public static Task Instance { get; internal set; }
+
         public Task SendAsync(IdentityMessage message)
         {
             // Plug in your email service here to send an email.
@@ -40,7 +42,7 @@ namespace BookStore
         {
         }
 
-        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 
+        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
             // Configure validation logic for usernames
@@ -81,7 +83,7 @@ namespace BookStore
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
             {
-                manager.UserTokenProvider = 
+                manager.UserTokenProvider =
                     new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
