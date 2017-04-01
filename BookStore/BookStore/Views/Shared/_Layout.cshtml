@@ -31,19 +31,18 @@
                         <li>
                             @Html.ActionLink("Sign Out", "Logout", "User")
                         </li>
-                    }
-                    else
-                    {
-                        <li>@Html.ActionLink("Register", "Register", "User")</li>
+                        <li style="color: #FFF;"><a><strong>Welcome:</strong> @Html.Encode(User.Identity.Name)</a> </li>
+                            }
+                            else
+                            {
+                                <li>@Html.ActionLink("Register", "Register", "User")</li>
                         <li>@Html.ActionLink("Sign In", "Index", "User")</li>
-                    }
+                    }                    
                 </ul>
             </div>
         </div>
     </div>
     <div class="container body-content">
-        @if (HttpContext.Current.User.Identity.IsAuthenticated)
-        {<strong>Welcome:</strong> @Html.Encode(User.Identity.Name)}
         @RenderBody()
         <hr />
         <footer>

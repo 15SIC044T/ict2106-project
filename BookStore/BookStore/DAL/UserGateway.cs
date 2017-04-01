@@ -8,5 +8,6 @@ namespace BookStore.DAL
 {
     public class UserGateway : DataGateway<User>
     {
-    }
+
+    } 
 }

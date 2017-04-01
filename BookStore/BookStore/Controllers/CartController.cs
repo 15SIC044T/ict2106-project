@@ -16,19 +16,21 @@ namespace BookStore.Controllers
 {
     public class CartController : Controller
     {
+        private UserGateway userGateway = new UserGateway();
         private CartGateway cartGateway = new CartGateway();
         private CartItemGateway cartItemGateway = new CartItemGateway();
         private BookStoreContext db = new BookStoreContext();
-        private ApplicationDbContext adb = new ApplicationDbContext();
+        //private ApplicationDbContext adb = new ApplicationDbContext();
 
-
+        [Authorize(Roles = "User, PremiumUser, BasicUser, Admin")]
         public ActionResult Index()
         {
-            ApplicationUser user = updateSession();
+            //ApplicationUser user = updateSession();
+            updateSession();
 
             //Create a new cart if the cart is empty
             //if (string.IsNullOrEmpty(Session["currentCart"].ToString()))
-            if (Session["currentCart"] == null)
+            if (Convert.ToInt32(Session["currentCart"]) == 0)
             {
                 //Create a new cart
                 Cart newCart = new Cart();
@@ -41,10 +43,11 @@ namespace BookStore.Controllers
                 string cartUserID = Session["userID"].ToString();
 
                 //var currentCart = db.Carts.SingleOrDefault(c => c.cartUserID.Equals(cartUserID) && c.dateOfPurchase.Equals(null));
-                Session["currentCart"] = newCart.cartID;
-                ApplicationUser u = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(System.Web.HttpContext.Current.User.Identity.GetUserId());
-                u.currentCart = newCart.cartID;
-                System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().Update(u);
+                Session["currentCart"] = newCart.cartID; 
+                var updateUser = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
+                updateUser.currentCart = newCart.cartID;
+                userGateway.Update(updateUser);
+
             }
 
             //Get a MAIN single cart ID
@@ -66,21 +69,22 @@ namespace BookStore.Controllers
                 }
             }
 
-            //Create a new model to contain all the data..
-
+            //Create a new model to contain all the data.. 
             List<CartViewModels> viewModel = new List<CartViewModels>();
 
             var cartData = new CartViewModels();
-            cartData.carts = db.Carts.SingleOrDefault(x => x.cartID == currentCartID);
+            var cartDataCarts = new Cart();
+            cartDataCarts = db.Carts.SingleOrDefault(x => x.cartID == currentCartID);
             cartData.cartItems = cartItemList;
             cartData.items = itemList;
 
             //Set default carts values
-            cartData.carts.gst = 7;
-            cartData.carts.discountAmount = 0;
-            cartData.carts.discountPercent = 0;
-            cartData.carts.subTotal = Convert.ToDecimal(db.CartItems.AsEnumerable().Where(x => x.cartID == currentCartID).Sum(x => x.price));
-            cartData.carts.totalPrice = cartData.carts.subTotal + (cartData.carts.subTotal * cartData.carts.gst / 100 * cartData.carts.discountPercent / 100);
+            cartDataCarts.gst = 7;
+            cartDataCarts.discountAmount = 0;
+            cartDataCarts.discountPercent = 0;
+            cartDataCarts.subTotal = Convert.ToDouble(db.CartItems.AsEnumerable().Where(x => x.cartID == currentCartID).Sum(x => x.price));
+            cartDataCarts.totalPrice = cartDataCarts.subTotal + (cartDataCarts.subTotal * cartDataCarts.gst / 100 * cartDataCarts.discountPercent / 100);
+            cartData.carts = cartDataCarts;
 
             viewModel.Add(cartData);
 
@@ -88,10 +92,11 @@ namespace BookStore.Controllers
 
         }
 
-        
+        [Authorize(Roles = "User, PremiumUser, BasicUser, Admin")]
         public ActionResult AddToCart(int id)
         {
-            ApplicationUser user = updateSession(); 
+            //ApplicationUser user = updateSession(); 
+            updateSession();
 
             //CurrentCartID
             int currentCartID = Convert.ToInt32(Session["currentCart"]);
@@ -123,9 +128,11 @@ namespace BookStore.Controllers
         }
         //
         // AJAX: /ShoppingCart/RemoveFromCart/5 
+        [Authorize(Roles = "User, PremiumUser, BasicUser, Admin")]
         public ActionResult RemoveFromCart(int id)
         {
-            ApplicationUser user = updateSession(); 
+            //ApplicationUser user = updateSession(); 
+            updateSession();
 
             //CurrentCartID
             int currentCartID = Convert.ToInt32(Session["currentCart"]);
@@ -137,26 +144,27 @@ namespace BookStore.Controllers
             return RedirectToAction("Index");
         }
 
-        public ApplicationUser updateSession()
-        {
-            ApplicationUser user = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(System.Web.HttpContext.Current.User.Identity.GetUserId());
 
+        public void updateSession()
+        {
+           
             if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
             {
                 Session["username"] = System.Web.HttpContext.Current.User.Identity.Name;
-                Session["userID"] = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                var userObj = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
 
-                //user = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(System.Web.HttpContext.Current.User.Identity.GetUserId());
-                Session["currentCart"] = user.currentCart;
-            }
-            return user;
+                Session["userID"] = userObj.Id;
+                Session["currentCart"] = userObj.currentCart; 
+                Session["Role"] = userObj.Role; 
+            } 
         }
 
-        
+        [Authorize(Roles = "User, PremiumUser, BasicUser, Admin")]
         public ActionResult OrderSummary()
         {
 
-            ApplicationUser user = updateSession();
+            //ApplicationUser user = updateSession();
+            updateSession();
 
             //Get a MAIN single cart ID
             //Get all the cart items   
@@ -190,7 +198,7 @@ namespace BookStore.Controllers
             cartData.carts.gst = 7;
             cartData.carts.discountAmount = 0;
             cartData.carts.discountPercent = 0;
-            cartData.carts.subTotal = Convert.ToDecimal(db.CartItems.AsEnumerable().Where(x => x.cartID == currentCartID).Sum(x => x.price));
+            cartData.carts.subTotal = Convert.ToDouble(db.CartItems.AsEnumerable().Where(x => x.cartID == currentCartID).Sum(x => x.price));
             cartData.carts.totalPrice = cartData.carts.subTotal + (cartData.carts.subTotal * cartData.carts.gst / 100 * cartData.carts.discountPercent / 100);
             cartData.carts.dateOfPurchase = DateTime.Now;
 
@@ -198,14 +206,12 @@ namespace BookStore.Controllers
             cartGateway.Update(cartData.carts);
 
             //Clear current user shopping cart
-            Session["currentCart"] = "";
-            ApplicationUser u = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(System.Web.HttpContext.Current.User.Identity.GetUserId());
-            u.currentCart = null;
-            System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().Update(u);
+            Session["currentCart"] = 0;
+            var updateUser = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
+            updateUser.currentCart = currentCartID;
+            userGateway.Update(updateUser); 
 
-
-            viewModel.Add(cartData);
-            //return View(viewModel);
+            viewModel.Add(cartData); 
             return View();
         }
 

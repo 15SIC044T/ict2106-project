@@ -98,6 +98,7 @@ namespace BookStore.Controllers
         // POST: Item/Create
         //[Route("Create")]
         [HttpPost]
+        [Authorize(Roles = "User")]
         public ActionResult Create([Bind(Include = "itemID,iName,iDescription,iImage,iPrice,iQuantity,iCategory")] Item item, HttpPostedFileBase file)
         {
             if (ModelState.IsValid)
@@ -120,9 +121,10 @@ namespace BookStore.Controllers
             }
 
             return View(item);
-        } 
+        }
 
         // GET: Item/Edit/5
+        [Authorize(Roles = "User")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -139,6 +141,7 @@ namespace BookStore.Controllers
 
         // POST: Item/Edit/5
         [HttpPost]
+        [Authorize(Roles = "User")]
         public ActionResult Edit(int id, [Bind(Include = "itemID,iName,iDescription,iImage,iPrice,iQuantity,iCategory")] Item item, HttpPostedFileBase file)
         {
             if (ModelState.IsValid)
@@ -161,6 +164,7 @@ namespace BookStore.Controllers
         }
 
         // GET: Item/Delete/5
+        [Authorize(Roles = "User")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -177,6 +181,7 @@ namespace BookStore.Controllers
 
         // POST: Item/Delete/5
         [HttpPost]
+        [Authorize(Roles = "User")]
         public ActionResult Delete(int id)
         {
             Item item = itemGateway.Delete(id);
