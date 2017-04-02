@@ -53,14 +53,14 @@
             }
             <tr>
                 <td><strong>SubTotal</strong></td>
-                <td><strong>Discount</strong></td>
+                <td><strong>Discount Amount (Percent)</strong></td>
                 <td><strong>GST</strong></td>
                 <td><strong>Total</strong></td>
             </tr>
             <tr>
                 <td>$@Html.DisplayFor(modelItem => item.carts.subTotal)</td>
                 <td>
-                    $@Html.DisplayFor(modelItem => item.carts.discountAmount) -
+                    $@Html.DisplayFor(modelItem => item.carts.discountAmount)  
                     (@Html.DisplayFor(modelItem => item.carts.discountPercent) %)
                 </td>
                 <td>@Html.DisplayFor(modelItem => item.carts.gst)</td>

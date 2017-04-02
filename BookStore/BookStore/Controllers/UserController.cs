@@ -108,12 +108,15 @@ namespace BookStore.Controllers
                             Session["currentCart"] = userObj.currentCart;
                             Session["username"] = userObj.Username;
                             Session["Role"] = userObj.Role;
-                            Roles.CreateRole(userObj.Role);
+                            if (!Roles.RoleExists(userObj.Role))
+                                // Create the role
+                                Roles.CreateRole(userObj.Role);
                             Roles.AddUserToRole(userObj.Username, userObj.Role);
 
                             //redirect to admin page
                             return RedirectToAction("Index", "Home");
                         }
+
                         else if (IsValidUser(user.UserName, user.Password))
                         {
                             //set form authentication to user true
@@ -124,7 +127,8 @@ namespace BookStore.Controllers
                             Session["currentCart"] = userObj.currentCart;
                             Session["username"] = userObj.Username;
                             Session["Role"] = userObj.Role;
-                            Roles.CreateRole(userObj.Role);
+                            if (!Roles.RoleExists(userObj.Role))
+                                Roles.CreateRole(userObj.Role);
                             Roles.AddUserToRole(userObj.Username, userObj.Role);
 
                             //redirect to user page
