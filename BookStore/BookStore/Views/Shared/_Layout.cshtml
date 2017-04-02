@@ -23,7 +23,8 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Item", "Index", "Item")</li>
-                    
+                    <li>@Html.ActionLink("Feedback", "Index", "Feedback")</li>
+
 
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {

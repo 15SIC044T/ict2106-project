@@ -190,6 +190,8 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\ContentRepository.cs" />
+    <Compile Include="Controllers\FeedbackController.cs" />
+    <Compile Include="Controllers\FeedbackCreateController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ItemController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -219,11 +221,22 @@
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\CartViewModels.cs" />
+    <Compile Include="Models\FeedbackCreatorSingleton.cs" />
+    <Compile Include="Models\Feedback\Feedback.cs" />
+    <Compile Include="Models\Feedback\FeedbackBuilder.cs" />
+    <Compile Include="Models\Feedback\FeedbackElement.cs" />
+    <Compile Include="Models\Feedback\FeedbackHeading.cs" />
+    <Compile Include="Models\Feedback\FeedbackParagraph.cs" />
     <Compile Include="Models\forgotPass.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\IFeedback.cs" />
+    <Compile Include="Models\IFeedbackBuilder.cs" />
+    <Compile Include="Models\IHeading.cs" />
+    <Compile Include="Models\IParagraph.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PremiumUser.cs" />
+    <Compile Include="Models\Recommended.cs" />
     <Compile Include="Models\RegisterUser.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\User.cs" />
@@ -391,9 +404,17 @@
     <Content Include="Views\User\RegisterPage.cshtml" />
     <Content Include="Views\Cart\OrderHistory.cshtml" />
     <Content Include="Views\Cart\OrderDetails.cshtml" />
+    <Content Include="Views\Feedback\Index.cshtml" />
+    <Content Include="Views\FeedbackCreate\Index.cshtml" />
+    <Content Include="Views\Feedback\Results.cshtml" />
+    <Content Include="Views\Shared\Results.cshtml" />
+    <Content Include="Views\FeedbackCreate\IndexTest.cshtml" />
+    <Content Include="Views\FeedbackCreate\Submit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\themes\User\" />
+    <Folder Include="Views\FeedbackResults\" />
+    <Folder Include="Views\Recommended\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
