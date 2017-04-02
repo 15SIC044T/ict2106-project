@@ -19,8 +19,10 @@
 <!-- Check the role of the user
     If the role of the user is Normal/Premium User, DISPLAY THIS
     -->
-@if (Roles.IsUserInRole(System.Web.HttpContext.Current.User.Identity.Name, "Admin") == true)
+@if (Roles.RoleExists("Admin"))
 {
+    if (Roles.IsUserInRole(System.Web.HttpContext.Current.User.Identity.Name, "Admin") == true)
+    {
     <p> @Html.ActionLink("Create New", "Create") </p>
 
     <table class="table">
@@ -109,15 +111,15 @@
     </table>
 
     @Html.PagedListPager(Model, pageNumber => Url.Action("Index", new
-    {
-        pageNumber,
-        option = Request.QueryString["option"],
-        search = Request.QueryString["search"]
-    }))
-
-}
-else 
 {
+    pageNumber,
+    option = Request.QueryString["option"],
+    search = Request.QueryString["search"]
+}))
+
+    }
+    else
+    {
 
     <table class="table">
 
@@ -144,14 +146,14 @@ else
                     <span>Quantity: @Html.DisplayFor(modelItem => item.iQuantity)</span>
 
                     @if (item.iQuantity == 0)
-                        {
+                    {
                         <span style="color: red">   Item out of stock!</span>
                     }<br>
                     @Html.ActionLink("Details", "Details", new { id = item.itemID })
                     @if (item.iQuantity != 0 && itemCheck != null)
+                    {
+                        if (itemCheck[count] == false)
                         {
-                            if (itemCheck[count] == false)
-                            {
                             @Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.itemID }, null) <span> | </span>
                         }
                         else
@@ -170,12 +172,13 @@ else
     } 
 
             @Html.PagedListPager(Model, pageNumber => Url.Action("Index", new
-   {
-       pageNumber,
-       option = Request.QueryString["option"],
-       search = Request.QueryString["search"]
-   })) 
+       {
+           pageNumber,
+           option = Request.QueryString["option"],
+           search = Request.QueryString["search"]
+       })) 
 
 </table>
- 
+
+    }
 }
