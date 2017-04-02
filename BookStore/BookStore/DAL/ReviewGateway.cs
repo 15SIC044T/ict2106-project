@@ -10,10 +10,10 @@ namespace BookStore.DAL
 {
     public class ReviewGateway : DataGateway<Review>
     {
-        public IEnumerable<Review> SelectReviewByItemID(int itemID)
+        public IEnumerable<Review> SelectReviewByItemID(string itemID)
         {
             return from p in this.data
-                   where p.itemID == itemID
+                   where p.itemID.Equals(itemID)
                    select p;
         }
     }

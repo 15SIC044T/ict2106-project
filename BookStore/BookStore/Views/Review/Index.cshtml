@@ -1,11 +1,16 @@
 ﻿@model IEnumerable<BookStore.Models.Review>
+@using Microsoft.AspNet.Identity;
+@using Microsoft.AspNet.Identity.Owin;
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-
+<h2>Review Index</h2>
+@{ 
+    string itemName = Session["itemName"].ToString();
+}
+<p>Item: @Html.DisplayName(itemName)</p>
 <p>
     @Html.ActionLink("Create Review", "Create", new { itemID = TempData["reviewItemID"] })
 </p>
@@ -15,36 +20,49 @@
             @Html.DisplayNameFor(model => model.reviewDate)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.reviewerID)
+            @Html.DisplayNameFor(model => model.reviewerName)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.reviewRating)
-        </th>      
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.reviewDescription)
         </th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.reviewDate)
-        </td>
-        <td>
-            @Html.DisplayNameFor(model => model.reviewerID)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.reviewRating)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.reviewDescription)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.reviewID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.reviewID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.reviewID })
-        </td>
-    </tr>
-}
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.reviewDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.reviewerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.reviewRating)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.reviewDescription)
+            </td>
+            <td>
+                @if (item.reviewerID == Session["userID"].ToString())
+                {
+                @Html.ActionLink("Edit", "Edit", new { reviewID = item.reviewID, itemID = item.itemID });
+                @Html.DisplayName(" | ");
+                @Html.ActionLink("Details", "Details", new { reviewID = item.reviewID , itemID = item.itemID});
+                @Html.DisplayName(" | ");
+                @Html.ActionLink("Delete", "Delete", new { reviewID = item.reviewID, itemID = item.itemID });
+                }
+                else
+                {
+                @Html.ActionLink("Details", "Details", new { reviewID = item.reviewID, itemID = item.itemID });
+                }
+
+
+            </td>
+        </tr>
+                    }
 
 </table>
