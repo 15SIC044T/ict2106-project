@@ -1,28 +1,27 @@
 ﻿@model BookStore.Models.Review
-
+@using Microsoft.AspNet.Identity;
+@using Microsoft.AspNet.Identity.Owin;
 @{
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2>Review Details</h2>
 
 <div>
     <h4>Review</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.reviewerID)
+            @Html.DisplayNameFor(model => model.reviewerName)
         </dt>
-
         <dd>
-            @Html.DisplayFor(model => model.reviewerID)
+            @Html.DisplayFor(model => model.reviewerName)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.itemID)
         </dt>
-
         <dd>
-            @Html.DisplayFor(model => model.itemID)
+            @Html.DisplayName(Session["itemName"].ToString())
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.reviewDate)
@@ -51,6 +50,6 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.reviewID }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Edit", "Edit", new { reviewID = Model.reviewID , itemID = Model.itemID }) |
+    @Html.ActionLink("Back to List", "Index", "Review", new { itemID = TempData["reviewItemID"], itemName = Session["itemName"] }, null)
 </p>

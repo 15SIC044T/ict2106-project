@@ -63,5 +63,5 @@
 </div>
 <p> 
     @Html.ActionLink("Back to List", "Index") |
-    @Html.ActionLink("See Reviews","Index","Review", new {itemID = Model.itemID}, null)
+    @Html.ActionLink("See Reviews","Index","Review", new {itemID = Model.itemID , itemName = Model.iName}, null)
 </p>
