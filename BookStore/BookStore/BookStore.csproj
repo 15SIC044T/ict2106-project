@@ -237,6 +237,10 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\ASPNETDB.MDF" />
+    <Content Include="App_Data\aspnetdb_log.ldf">
+      <DependentUpon>ASPNETDB.MDF</DependentUpon>
+    </Content>
     <Content Include="App_Data\BookStoreContext.mdf" />
     <Content Include="App_Data\BookStoreContext_log.ldf">
       <DependentUpon>BookStoreContext.mdf</DependentUpon>
