@@ -40,5 +40,10 @@ namespace BookStore.Controllers
             }
 
         }
+
+        public ActionResult Results()
+        {
+            return View();
+        }
     }
 }
