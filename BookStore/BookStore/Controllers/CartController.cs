@@ -265,7 +265,7 @@ namespace BookStore.Controllers
         {
             updateSession();
             string currentUserID = Session["userID"].ToString();
-            List<Cart> cartData = db.Carts.Where(x => x.cartUserID == currentUserID && x.dateOfPurchase != null).ToList();
+            List<Cart> cartData = db.Carts.Where(x => x.cartUserID == currentUserID && x.dateOfPurchase != null).OrderByDescending(x=> x.dateOfPurchase).ToList();
 
             return View(cartData);
 
