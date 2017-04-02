@@ -10,11 +10,12 @@ namespace BookStore.Controllers
     public class FeedbackController : Controller
     {
         // GET: Feedback
-        public ActionResult Index()
+        public ActionResult Index(string format)
         {
+            // pass the output format as view data to be saved in the form
+            ViewData["Format"] = format;
             return View();
         }
-
 
         //
         // GET: /Feedback/Submit/
