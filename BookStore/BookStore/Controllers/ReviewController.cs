@@ -68,7 +68,7 @@ namespace BookStore.Controllers
             if (itemID != null)
             {
                 Review review = new Models.Review();
-                review.itemID = itemID.ToString();
+                review.itemID = (int)itemID;
                 updateSession();
                 review.reviewerID = Session["userID"].ToString();
                 review.reviewerName = Session["username"].ToString();
