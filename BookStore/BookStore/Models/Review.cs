@@ -14,7 +14,7 @@ namespace BookStore.Models
         [Key]
         public int reviewID { get; set; }
         [Display(Name = "Item:")]
-        public string itemID { get; set; }
+        public int itemID { get; set; }
 
         [Display(Name = "ReviewerID:")]
         public string reviewerID { get; set; }
