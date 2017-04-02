@@ -405,10 +405,12 @@
     <Content Include="Views\Cart\OrderDetails.cshtml" />
     <Content Include="Views\Feedback\Index.cshtml" />
     <Content Include="Views\FeedbackCreate\Index.cshtml" />
-    <Content Include="Views\FeedbackResults\Results.cshtml" />
+    <Content Include="Views\Feedback\Results.cshtml" />
+    <Content Include="Views\Shared\Results.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\themes\User\" />
+    <Folder Include="Views\FeedbackResults\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

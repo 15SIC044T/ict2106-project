@@ -38,8 +38,8 @@ namespace BookStore.Controllers
 
             // finished building
             builder.CloseDocument();
-
-            return View("~/ Views / FeedbackResults / Results", builder.GetDocument().GetString());
+            //return View("~/Views/Feedback/Results", builder.GetDocument().GetString());
+            return View("~/Views/Shared/Results", builder.GetDocument().GetString());
         }
     }
 }
