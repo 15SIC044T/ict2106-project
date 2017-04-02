@@ -87,7 +87,7 @@ namespace BookStore.Controllers
 
         [HttpPost]
         public ActionResult Login(UserLogin user)
-        {
+        { 
             if (Session["Captcha"] == null || Session["Captcha"].ToString() != user.Captcha)
             {
                 ModelState.AddModelError("Captcha", "Wrong value of sum, please try again.");
@@ -111,7 +111,8 @@ namespace BookStore.Controllers
                             if (!Roles.RoleExists(userObj.Role))
                                 // Create the role
                                 Roles.CreateRole(userObj.Role);
-                            Roles.AddUserToRole(userObj.Username, userObj.Role);
+                            if (!Roles.IsUserInRole(userObj.Username, userObj.Role))
+                                Roles.AddUserToRole(userObj.Username, userObj.Role);
 
                             //redirect to admin page
                             return RedirectToAction("Index", "Home");
@@ -129,7 +130,8 @@ namespace BookStore.Controllers
                             Session["Role"] = userObj.Role;
                             if (!Roles.RoleExists(userObj.Role))
                                 Roles.CreateRole(userObj.Role);
-                            Roles.AddUserToRole(userObj.Username, userObj.Role);
+                            if (!Roles.IsUserInRole(userObj.Username, userObj.Role))
+                                Roles.AddUserToRole(userObj.Username, userObj.Role);
 
                             //redirect to user page
                             return RedirectToAction("Index", "Item");
@@ -141,6 +143,7 @@ namespace BookStore.Controllers
                     }
                     catch (Exception ex)
                     {
+                        ViewBag.ex = ex;
                         ModelState.AddModelError("", "Login data is incorrect!");
                     }
                 }

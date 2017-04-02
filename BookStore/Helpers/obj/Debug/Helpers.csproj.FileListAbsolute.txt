@@ -45,6 +45,5 @@ D:\Luohan\Github\ict2106-project\ict2106-project\BookStore\Helpers\bin\Debug\Sys
 D:\Luohan\Github\ict2106-project\ict2106-project\BookStore\Helpers\bin\Debug\System.Web.WebPages.xml
 D:\Luohan\Github\ict2106-project\ict2106-project\BookStore\Helpers\bin\Debug\System.Web.WebPages.Deployment.xml
 D:\Luohan\Github\ict2106-project\ict2106-project\BookStore\Helpers\bin\Debug\System.Web.WebPages.Razor.xml
-D:\Luohan\Github\ict2106-project\ict2106-project\BookStore\Helpers\obj\Debug\Helpers.csprojResolveAssemblyReference.cache
 D:\Luohan\Github\ict2106-project\ict2106-project\BookStore\Helpers\obj\Debug\Helpers.dll
 D:\Luohan\Github\ict2106-project\ict2106-project\BookStore\Helpers\obj\Debug\Helpers.pdb
