@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable <BookStore.Models.RecommendedList >
+@{
     ViewBag.Title = "Home Page";
 }
 
@@ -8,9 +9,18 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h1>Popular Books</h1>
-        <p>
-            <img src="~/Content/images/bookList.png" />
-        </p>
+        <table>
+            <tr>
+                @foreach(var item in Model)
+                {
+                    <td>
+                        @{
+                            <img src="/@Html.DisplayFor(modelItem => item.iImage)" alt="" height=150 width=100 /><br>
+                            @Html.DisplayFor(modelItem => item.iName)
+                        }
+                    </td>
+                }
+            </tr>
+        </table>
     </div>
 </div>
