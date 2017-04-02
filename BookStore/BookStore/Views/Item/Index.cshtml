@@ -15,35 +15,112 @@
     <b> Search by </b><text>Name: </text> @Html.TextBox("search") <input type="submit" name="submit" value="Search" />
 }
 
-<!-- Check the role of the user
-    If the role of the user is Admin, DISPLAY THIS 
-    -->
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.First().iName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.First().iDescription)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.First().iImage)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.First().iPrice)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.First().iCategory)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.First().iQuantity)
-        </th>
-        <th></th>
-    </tr>
+<!-- Check the role of the user
+    If the role of the user is Normal/Premium User, DISPLAY THIS
+    -->
+@if (Roles.IsUserInRole(System.Web.HttpContext.Current.User.Identity.Name, "Admin") == true)
+{
+    <p> @Html.ActionLink("Create New", "Create") </p>
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().iName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().iDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().iImage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().iPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().iCategory)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().iQuantity)
+            </th>
+            <th></th>
+        </tr>
+
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="3"> Records not found </td>
+            </tr>
+        }
+        else
+        {
+            int count = 0;
+            List<bool> itemCheck = ViewBag.check;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.iName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.iDescription)
+                    </td>
+                    <td>
+                        <img src="/@Html.DisplayFor(modelItem => item.iImage)" alt="" height=150 width=100 />
+                        <!--Html.DisplayFor(modelItem => item.iImage)-->
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.iPrice)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.iCategory)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.iQuantity)
+
+                        @if (item.iQuantity == 0)
+                        {
+                            <p style="color: red">Item out of stock!</p>
+                        }
+                    </td>
+                    <td>
+                        @if (item.iQuantity != 0 && itemCheck != null)
+                        {
+                            if (itemCheck[count] == false)
+                            {
+                                @Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.itemID }, null) <span> | </span>
+                            }
+                            else
+                            {
+                                <span style="color: red;">Already in cart</span> <span> | </span>
+                            }
+                        }
+
+                        <!--Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.itemID }, null) |  -->
+                        @Html.ActionLink("Edit", "Edit", new { id = item.itemID }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.itemID }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.itemID })
+                    </td>
+                </tr>
+                count++;
+            }
+        }
+
+    </table>
+
+    @Html.PagedListPager(Model, pageNumber => Url.Action("Index", new
+    {
+        pageNumber,
+        option = Request.QueryString["option"],
+        search = Request.QueryString["search"]
+    }))
+
+}
+else 
+{
+
+    <table class="table">
+
 
     @if (Model.Count() == 0)
     {
@@ -54,68 +131,51 @@
     else
     {
         int count = 0;
+        int colCount = 0;
         List<bool> itemCheck = ViewBag.check;
-        foreach (var item in Model)
-        {
-            <tr>
+        <tr>
+
+            @foreach (var item in Model)
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.iName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.iDescription)
-                </td>
-                <td>
-                    <img src="/@Html.DisplayFor(modelItem => item.iImage)" alt="" height=150 width=100 />
-                    <!--Html.DisplayFor(modelItem => item.iImage)-->
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.iPrice)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.iCategory)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.iQuantity)
+                    <a href=""><img src="/@Html.DisplayFor(modelItem => item.iImage)" alt="" height=150 width=100 /></a><br>
+                    <b>@Html.DisplayFor(modelItem => item.iName)</b><br>
+                    <span>Price: $@Html.DisplayFor(modelItem => item.iPrice)</span><br>
+                    <span>Quantity: @Html.DisplayFor(modelItem => item.iQuantity)</span>
 
                     @if (item.iQuantity == 0)
-                    {
-                        <p style="color: red">Item out of stock!</p>
-                    }
-                </td>
-                <td> 
-                    @if (item.iQuantity != 0 && itemCheck != null)
-                    {
-                        if (itemCheck[count] == false)
                         {
+                        <span style="color: red">   Item out of stock!</span>
+                    }<br>
+                    @Html.ActionLink("Details", "Details", new { id = item.itemID })
+                    @if (item.iQuantity != 0 && itemCheck != null)
+                        {
+                            if (itemCheck[count] == false)
+                            {
                             @Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.itemID }, null) <span> | </span>
                         }
                         else
                         {
                             <span style="color: red;">Already in cart</span> <span> | </span>
                         }
-                    }  
+                    }
 
-                    <!--Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.itemID }, null) |  -->                                                      
-                    @Html.ActionLink("Edit", "Edit", new { id = item.itemID }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.itemID }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.itemID })
                 </td>
-            </tr>
-            count++;
-        }
-    }
+            }
+
+        </tr>
+
+        colCount++;
+        count++;
+    } 
+
+            @Html.PagedListPager(Model, pageNumber => Url.Action("Index", new
+   {
+       pageNumber,
+       option = Request.QueryString["option"],
+       search = Request.QueryString["search"]
+   })) 
 
 </table>
-
-@Html.PagedListPager(Model, pageNumber => Url.Action("ViewProduct", new
-{
-    pageNumber,
-    option = Request.QueryString["option"],
-    search = Request.QueryString["search"]
-}))
-
-
-<!-- Check the role of the user
-    If the role of the user is Normal/Premium User, DISPLAY THIS
-    -->
-
+ 
+}

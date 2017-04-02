@@ -217,7 +217,7 @@ namespace BookStore.Controllers
             cartData.carts.discountAmount = cartData.carts.subTotal * cartData.carts.discountPercent / 100.0;
             cartData.carts.deliveryCharge = deliveryCharge;
             cartData.carts.totalPrice = (cartData.carts.subTotal + deliveryCharge - cartData.carts.discountAmount) * (1 + (cartData.carts.gst / 100.0));
-            cartData.carts.dateOfPurchase = DateTime.Today;
+            cartData.carts.dateOfPurchase = DateTime.Now;
 
             //Update carts value to existing cart
             cartGateway.Update(cartData.carts);

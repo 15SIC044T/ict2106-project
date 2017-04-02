@@ -22,40 +22,39 @@ namespace BookStore.Controllers
          
         // GET: Item
         public ActionResult Index(string option, string search, int? pageNumber, string sort)
-        {
-            // List<Item> itemList = null;
-            updateSession();
-            //if a user choose the radio button option 
-
+        { 
             //Search by name, description and category
             List<Item> itemList = (db.Items.Where(x => x.iName.Contains(search) || x.iDescription.Contains(search) || x.iCategory.Contains(search) || search == null).OrderBy(x=>x.iName).ThenBy(x=>x.iCategory).ToList());
   
-            List<bool> itemListCheck = null;
-            //Using iterator to check for every item if its available or not
-            //Get all the item details and store it in the list;
-            if (Convert.ToInt32(Session["currentCart"]) > 0) { 
-                int currentCartID = Convert.ToInt32(Session["currentCart"]);
-                itemListCheck = new List<bool>();
+            if (System.Web.HttpContext.Current.User.Identity.Name != null) {
+                updateSession();
+                List<bool> itemListCheck = null;
+                //Using iterator to check for every item if its available or not
+                //Get all the item details and store it in the list;
+                if (Convert.ToInt32(Session["currentCart"]) > 0) { 
+                    int currentCartID = Convert.ToInt32(Session["currentCart"]);
+                    itemListCheck = new List<bool>();
                  
-                IIterator<Item> iter = new IteratorGeneric<Item>(itemList); 
+                    IIterator<Item> iter = new IteratorGeneric<Item>(itemList); 
 
-                while (!iter.IsDone())
-                {
-                    int? newItemID = iter.current().itemID;
-                    if (newItemID != null)
+                    while (!iter.IsDone())
                     {
-                        CartItem item = db.CartItems.SingleOrDefault(x => x.itemID == newItemID && x.cartID == currentCartID);
-                        if (item == null)
-                            itemListCheck.Add(false);
-                        else
-                            itemListCheck.Add(true);
+                        int? newItemID = iter.current().itemID;
+                        if (newItemID != null)
+                        {
+                            CartItem item = db.CartItems.SingleOrDefault(x => x.itemID == newItemID && x.cartID == currentCartID);
+                            if (item == null)
+                                itemListCheck.Add(false);
+                            else
+                                itemListCheck.Add(true);
 
-                        iter.Next();
+                            iter.Next();
+                        }
                     }
-                }
 
-                ViewBag.check = itemListCheck;
+                    ViewBag.check = itemListCheck;
 
+                    }
             }
 
             return View(itemList.ToPagedList(pageNumber ?? 1, 3));
@@ -89,21 +88,21 @@ namespace BookStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (file.ContentLength > 0)
+                if (file != null)
                 {
-                    var fileName = Path.GetFileName(file.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Uploads"), fileName);
-                    var pathString = Path.Combine("Uploads/", fileName);
-                    file.SaveAs(path);
+                    if (file.ContentLength > 0)
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var path = Path.Combine(Server.MapPath("~/Uploads"), fileName);
+                        var pathString = Path.Combine("Uploads/", fileName);
+                        file.SaveAs(path);
 
-                    item.iImage = pathString;
+                        item.iImage = pathString;
+                    } 
 
+                } 
                     itemGateway.Insert(item);
-                    return RedirectToAction("Index");
-
-                }
-                else
-                    return RedirectToAction("Index"); 
+                    return RedirectToAction("Index");  
             }
 
             return View(item);
