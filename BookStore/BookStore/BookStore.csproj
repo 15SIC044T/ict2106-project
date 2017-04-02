@@ -214,6 +214,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="DAL\BookStoreContext.cs" />
+    <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\BasicUser.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartItem.cs" />
@@ -227,6 +228,7 @@
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserChangePassword.cs" />
+    <Compile Include="Models\UserFactory.cs" />
     <Compile Include="Models\UserLogin.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
@@ -235,6 +237,10 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\ASPNETDB.MDF" />
+    <Content Include="App_Data\aspnetdb_log.ldf">
+      <DependentUpon>ASPNETDB.MDF</DependentUpon>
+    </Content>
     <Content Include="App_Data\BookStoreContext.mdf" />
     <Content Include="App_Data\BookStoreContext_log.ldf">
       <DependentUpon>BookStoreContext.mdf</DependentUpon>
@@ -383,6 +389,8 @@
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\User\RegisterAdminPage.cshtml" />
     <Content Include="Views\User\RegisterPage.cshtml" />
+    <Content Include="Views\Cart\OrderHistory.cshtml" />
+    <Content Include="Views\Cart\OrderDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\themes\User\" />

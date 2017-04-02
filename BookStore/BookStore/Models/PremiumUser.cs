@@ -13,11 +13,12 @@ namespace BookStore.Models
     public class PremiumUser : User
     {
         public PremiumUser()
-        {
-
+        { 
             birthdayDiscount = 20;
             deliveryCharge = 0;
         }
+
+        public virtual string Role { get { return "PremiumUser"; } }
 
         [Display(Name = "Birthday Discount:")] 
         public decimal birthdayDiscount { get; set; }

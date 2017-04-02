@@ -17,6 +17,8 @@ namespace BookStore.Models
             deliveryCharge = 20;
         }
 
+        public virtual string Role { get { return "BasicUser"; } }
+
         [Display(Name = "Birthday Discount:")] 
         public decimal birthdayDiscount { get; set; }
 

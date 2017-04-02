@@ -25,9 +25,11 @@ namespace BookStore.Models
 
         public string Email { get; set; }
 
-        public string Premiumuser { get; set; }
+        public Boolean Premiumuser { get; set; }
 
         public string Role { get; set; }
+
+        public int currentCart { get; set; }
 
     }
 }

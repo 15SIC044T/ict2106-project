@@ -19,58 +19,46 @@ namespace BookStore.Controllers
     {
         private ItemGateway itemGateway = new ItemGateway();
         private BookStoreContext db = new BookStoreContext();
-
-        /*public ActionResult Index()
-        {
-            return View(itemGateway.SelectAll());
-            //return View(db.Tours.ToList());
-        }*/
-
+         
         // GET: Item
         public ActionResult Index(string option, string search, int? pageNumber, string sort)
         {
-            List<Item> itemList = db.Items.ToList();
-            //pass the StudentList list object to the view.  
-            //return View(ProductList);
-            // sort 
-            ViewBag.SortByName = string.IsNullOrEmpty(sort) ? "descending name" : "";
-            ViewBag.SortByCategory = sort == "Category" ? "descending Category" : "Category";
+            // List<Item> itemList = null;
+            updateSession();
+            //if a user choose the radio button option 
 
-            var records = db.Items.AsQueryable();
+            //Search by name, description and category
+            List<Item> itemList = (db.Items.Where(x => x.iName.Contains(search) || x.iDescription.Contains(search) || x.iCategory.Contains(search) || search == null).OrderBy(x=>x.iName).ThenBy(x=>x.iCategory).ToList());
+  
+            List<bool> itemListCheck = null;
+            //Using iterator to check for every item if its available or not
+            //Get all the item details and store it in the list;
+            if (Convert.ToInt32(Session["currentCart"]) > 0) { 
+                int currentCartID = Convert.ToInt32(Session["currentCart"]);
+                itemListCheck = new List<bool>();
+                 
+                IIterator<Item> iter = new IteratorGeneric<Item>(itemList); 
 
-            //if a user choose the radio button option as Subject  
-            if (option == "Name")
-            {
-                //Index action method will return a view with a student records based on what a user specify the value in textbox  
-                return View(db.Items.Where(x => x.iName.Contains(search) || search == null).ToList().ToPagedList(pageNumber ?? 1, 3));
-            }
-            else if (option == "Category")
-            {
-                return View(db.Items.Where(x => x.iCategory.Contains(search) || search == null).ToList().ToPagedList(pageNumber ?? 1, 3));
-            }
-            else
-            {
-                return View(db.Items.Where(x => x.iName.Contains(search) || search == null).ToList().ToPagedList(pageNumber ?? 1, 3));
-            }
+                while (!iter.IsDone())
+                {
+                    int? newItemID = iter.current().itemID;
+                    if (newItemID != null)
+                    {
+                        CartItem item = db.CartItems.SingleOrDefault(x => x.itemID == newItemID && x.cartID == currentCartID);
+                        if (item == null)
+                            itemListCheck.Add(false);
+                        else
+                            itemListCheck.Add(true);
 
-            switch (sort)
-            {
+                        iter.Next();
+                    }
+                }
 
-                case "descending name":
-                    records = records.OrderByDescending(x => x.iName);
-                    break;
-
-                case "descending Category":
-                    records = records.OrderByDescending(x => x.iCategory);
-                    break;
-
-                default:
-                    records = records.OrderBy(x => x.iName);
-                    break;
+                ViewBag.check = itemListCheck;
 
             }
 
-            return View(itemList);
+            return View(itemList.ToPagedList(pageNumber ?? 1, 3));
             //return View(itemGateway.SelectAll());
         }
 
@@ -89,15 +77,14 @@ namespace BookStore.Controllers
             return View(item);
         }
 
-        // GET: Item/Create
+        // GET: Item/Create 
         public ActionResult Create()
         {
-            return View();
+             return View();
         }
 
-        // POST: Item/Create
-        //[Route("Create")]
-        [HttpPost]
+        // POST: Item/Create 
+        [HttpPost] 
         public ActionResult Create([Bind(Include = "itemID,iName,iDescription,iImage,iPrice,iQuantity,iCategory")] Item item, HttpPostedFileBase file)
         {
             if (ModelState.IsValid)
@@ -120,9 +107,9 @@ namespace BookStore.Controllers
             }
 
             return View(item);
-        } 
+        }
 
-        // GET: Item/Edit/5
+        // GET: Item/Edit/5  
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -138,29 +125,34 @@ namespace BookStore.Controllers
         }
 
         // POST: Item/Edit/5
-        [HttpPost]
+        [HttpPost] 
         public ActionResult Edit(int id, [Bind(Include = "itemID,iName,iDescription,iImage,iPrice,iQuantity,iCategory")] Item item, HttpPostedFileBase file)
         {
             if (ModelState.IsValid)
-            { if (file.ContentLength > 0)
-                    { 
+            {
+                if (file != null)
+                {
+                    if (file.ContentLength > 0)
+                    {
                         var fileName = Path.GetFileName(file.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Uploads"), fileName); 
-                    var pathString = "Uploads/" + fileName;
-                    file.SaveAs(path);
+                        var path = Path.Combine(Server.MapPath("~/Uploads"), fileName);
+                        var pathString = "Uploads/" + fileName;
+                        file.SaveAs(path);
 
-                        item.iImage = pathString;  
-
-                        itemGateway.Update(item);
-                    } 
-
-                //itemGateway.Update(item);
-                return RedirectToAction("Index");
+                        item.iImage = pathString;
+                    }
+                }
+                else {
+                    var existingItem = db.Items.SingleOrDefault(x => x.itemID == item.itemID);
+                    item.iImage = existingItem.iImage;
+                }
+                itemGateway.Update(item); 
+                return RedirectToAction("Index"); 
             }
             return View(item);
         }
 
-        // GET: Item/Delete/5
+        // GET: Item/Delete/5 
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -176,13 +168,27 @@ namespace BookStore.Controllers
         }
 
         // POST: Item/Delete/5
-        [HttpPost]
+        [HttpPost] 
         public ActionResult Delete(int id)
         {
             Item item = itemGateway.Delete(id);
             return RedirectToAction("Index");
-        } 
+        }
+
+        public void updateSession()
+        { 
+            if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            {
+                Session["username"] = System.Web.HttpContext.Current.User.Identity.Name;
+                var userObj = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
+
+                Session["userID"] = userObj.Id;
+                Session["currentCart"] = userObj.currentCart;
+                Session["Role"] = userObj.Role;
+            }
+        }
     }
+
 }
 
 // Image Upload

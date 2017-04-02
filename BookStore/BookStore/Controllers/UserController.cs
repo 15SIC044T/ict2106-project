@@ -1,8 +1,6 @@
 ﻿using BookStore.DAL;
-using BookStore.Models;
-using Microsoft.AspNet.Identity;
-using System;
-using System.Collections.Generic;
+using BookStore.Models; 
+using System; 
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -89,7 +87,7 @@ namespace BookStore.Controllers
 
         [HttpPost]
         public ActionResult Login(UserLogin user)
-        {
+        { 
             if (Session["Captcha"] == null || Session["Captcha"].ToString() != user.Captcha)
             {
                 ModelState.AddModelError("Captcha", "Wrong value of sum, please try again.");
@@ -104,14 +102,36 @@ namespace BookStore.Controllers
                         {
                             //set form authentication to user true
                             FormsAuthentication.SetAuthCookie(user.UserName, user.RememberMe);
+                            var userObj = db.Users.Single(x => x.Username == user.UserName);
+
+                            Session["userID"] = userObj.Id;
+                            Session["currentCart"] = userObj.currentCart;
+                            Session["username"] = userObj.Username;
+                            Session["Role"] = userObj.Role;
+                            if (!Roles.RoleExists(userObj.Role))
+                                // Create the role
+                                Roles.CreateRole(userObj.Role);
+                            if (!Roles.IsUserInRole(userObj.Username, userObj.Role))
+                                Roles.AddUserToRole(userObj.Username, userObj.Role);
 
                             //redirect to admin page
                             return RedirectToAction("Index", "Home");
                         }
+
                         else if (IsValidUser(user.UserName, user.Password))
                         {
                             //set form authentication to user true
                             FormsAuthentication.SetAuthCookie(user.UserName, user.RememberMe);
+                            var userObj = db.Users.Single(x => x.Username == user.UserName);
+
+                            Session["userID"] = userObj.Id;
+                            Session["currentCart"] = userObj.currentCart;
+                            Session["username"] = userObj.Username;
+                            Session["Role"] = userObj.Role;
+                            if (!Roles.RoleExists(userObj.Role))
+                                Roles.CreateRole(userObj.Role);
+                            if (!Roles.IsUserInRole(userObj.Username, userObj.Role))
+                                Roles.AddUserToRole(userObj.Username, userObj.Role);
 
                             //redirect to user page
                             return RedirectToAction("Index", "Item");
@@ -123,6 +143,7 @@ namespace BookStore.Controllers
                     }
                     catch (Exception ex)
                     {
+                        ViewBag.ex = ex;
                         ModelState.AddModelError("", "Login data is incorrect!");
                     }
                 }
@@ -165,24 +186,7 @@ namespace BookStore.Controllers
         {
             cp.uName = User.Identity.Name;
             //check if old password is same as existing password in db (encode hash the input)
-            bool result = checkOldPassword(cp);
-
-            // Check if the old password is the same as new password
-            //// if not the same - change 
-            //bool checckresult2 = checkOldPassword(cp);
-            //if (checckresult2 == true)
-            //{
-            //    if (cp.uOPwd.Equals(Helpers.SHA.Encode(cp.uPwd)))
-            //    {
-
-            //        ModelState.AddModelError("", "Password is the same as the old password, please create a brand new password!");
-            //    }
-
-            //    else
-            //    {
-            //        ModelState.AddModelError("", "Password Changed!");
-            //    }
-            //}
+            bool result = checkOldPassword(cp); 
             
             while (result == true)
             {
@@ -323,8 +327,7 @@ namespace BookStore.Controllers
             using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
             {
                 bool result = false;
-                string _sql = @"SELECT * FROM [dbo].[Users] " +
-                  @"WHERE [Email] = @u";
+                string _sql = @"SELECT * FROM [dbo].[Users] " + @"WHERE [Email] = @u";
 
                 var cmd = new SqlCommand(_sql, cn);
                 cmd.Parameters
@@ -350,6 +353,37 @@ namespace BookStore.Controllers
         }
 
 
+
+        public bool checkUserExists(string user)
+        {
+            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
+            {
+                bool result = false;
+                string _sql = @"SELECT * FROM [dbo].[Users] " + @"WHERE [Username] = @u";
+
+                var cmd = new SqlCommand(_sql, cn);
+                cmd.Parameters
+                            .Add(new SqlParameter("@u", SqlDbType.NVarChar))
+                            .Value = user;
+
+                cn.Open();
+                try
+                {
+                    //didnt read
+                    var reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        result = true;
+                        reader.Dispose();
+                        cmd.Dispose();
+                    }
+                }
+                catch (Exception ex) { }
+
+                return result;
+            }
+        }
+
         [HttpPost]
         public ActionResult Create(RegisterUser account)
         {
@@ -357,33 +391,53 @@ namespace BookStore.Controllers
             {
                 try
                 {
-                    User reg = new User();
+                    User reg;
+
+                    if (account.uPremiumUser)
+                    {
+                        reg = new PremiumUser();
+                    }
+                    else {
+                        reg = new BasicUser();
+                    }
+
                     reg.Username = account.uName;
                     DateTime oDate = Convert.ToDateTime(account.uDOB);
                     reg.Birthdate = oDate;
                     reg.Password = Helpers.SHA.Encode(account.uPwd);
 
-                    bool result =  checkMailExists(account.uEmail);
+                    bool result = checkUserExists(account.uName);
+                    bool resultemail = checkMailExists(account.uEmail);
                     if (result == true)
                     {
-                        ModelState.AddModelError("", account.uEmail + " already taken.");
+                        ModelState.AddModelError("", account.uName + " already taken.");
                     }
                     else
-                    {
-                        reg.Email = account.uEmail;
-                        reg.Premiumuser = account.uPremiumUser.ToString();
-                        reg.Role = "User";
-
-                        userGateway.Insert(reg);
-
-                        /*using (BookStoreContext db = new BookStoreContext())
+                        if (resultemail == true)
                         {
-                            db.Users.Add(reg);
-                            db.SaveChanges();
-                        }*/
-                        ModelState.AddModelError("", account.uName + " successfully registered.");
+                            ModelState.AddModelError("", account.uEmail + " already taken.");
+                        }
+                    else
+                        if (result == false && resultemail == false)
+                        {
+                            reg.Email = account.uEmail;
+                            reg.Premiumuser = account.uPremiumUser;
+
+
+                            if (account.uPremiumUser)
+                            {
+                                reg.Role = "PremiumUser";
+                                userGateway.Insert(reg);
+                            }
+                            else
+                            {
+                                reg.Role = "BasicUser";
+                                userGateway.Insert(reg);
+                            }
+
+                            ModelState.AddModelError("", account.uName + " successfully registered.");
+                        }
                     }
-                }
                 catch (Exception e)
                 {
                     ViewBag.Message = e.ToString();
@@ -398,28 +452,25 @@ namespace BookStore.Controllers
             {
                 try
                 {
-                    User reg = new User();
+                    User reg = new Admin();
                     reg.Username = account.uName;
                     DateTime oDate = Convert.ToDateTime(account.uDOB);
                     reg.Birthdate = oDate;
                     reg.Password = Helpers.SHA.Encode(account.uPwd);
 
-                    bool result = checkMailExists(account.uEmail);
+                    bool result = checkUserExists(account.uName);
                     if (result == true)
                     {
-                        ModelState.AddModelError("", account.uEmail + " already taken.");
+                        ModelState.AddModelError("", account.uName + " already taken.");
                     }
                     else
                     {
                         reg.Email = account.uEmail;
-                        reg.Premiumuser = account.uPremiumUser.ToString();
+                        reg.Premiumuser = account.uPremiumUser;
                         reg.Role = "Admin";
 
-                        using (BookStoreContext db = new BookStoreContext())
-                        {
-                            db.Users.Add(reg);
-                            db.SaveChanges();
-                        }
+                        userGateway.Insert(reg); 
+
                         ModelState.AddModelError("", account.uName + " successfully registered.");
                     }
                 }
@@ -479,7 +530,7 @@ namespace BookStore.Controllers
             {
                 bool result = false;
                 string _sql = @"SELECT [Username] FROM [dbo].[Users] " +
-                      @"WHERE [Username] = @u AND [Password] = @p AND [Role]= @a";
+                      @"WHERE [Username] = @u AND [Password] = @p AND [Role] LIKE @a";
 
                 var cmd = new SqlCommand(_sql, cn);
                 cmd.Parameters
@@ -490,7 +541,7 @@ namespace BookStore.Controllers
                     .Value = Helpers.SHA.Encode(_password);
                 cmd.Parameters
                     .Add(new SqlParameter("@a", SqlDbType.NVarChar))
-                    .Value = "User";
+                    .Value = "%User%";
                 cn.Open();
                 try
                 {
@@ -539,39 +590,8 @@ namespace BookStore.Controllers
 
         public User checkEmailValid (String email)
         {
-            using (var cn = new SqlConnection(@"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\BookStoreContext.mdf;Initial Catalog=BookStoreContext;Integrated Security=True"))
-            {
-                User u = new User();
-                string _sql = @"SELECT * FROM [dbo].[Users] " +
-                  @"WHERE [Email] = @u";
-
-                var cmd = new SqlCommand(_sql, cn);
-                cmd.Parameters
-                            .Add(new SqlParameter("@u", SqlDbType.NVarChar))
-                            .Value = email;
-
-                cn.Open();
-                try
-                {
-                    //didnt read
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        u.Id = (int)reader[0];
-                        u.Username = reader[1].ToString();
-                        u.Password = reader[2].ToString();
-                        u.Birthdate = (DateTime)reader[3];
-                        u.Email = reader[4].ToString();
-                        u.Premiumuser = reader[5].ToString();
-                        u.Role = reader[6].ToString();
-                        reader.Dispose();
-                        cmd.Dispose();
-                    }
-                }
-                catch (Exception ex) {  }
-
-                return u;
-            }
+            User userObj = db.Users.Single(x => x.Email == email);
+            return userObj; 
         }
 
         public void Execute(String usremail)
@@ -655,156 +675,6 @@ namespace BookStore.Controllers
             }
             return result;
         }
-
-        // -----------------------------------------------Forget password-----------------------------------------------------------
-
-        
-        //    [HttpPost]
-        //    [AllowAnonymous]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<ActionResult> Forgot(forgotPass model)
-        //    {
-        //        if (ModelState.IsValid)
-        //        {
-        //            Debug.WriteLine("Forgot: Checking for user ID = " + model.Email);
-        //            var user = await UserManager.FindByNameAsync(model.Email);
-        //            // If the user does not exist or the user has not confirmed their email,
-        //            // then say we confirmed, but don't actually do anything.
-        //            if (user == null || !(await UserManager.IsEmailConfirmedAsync(user)))
-        //            {
-        //                Debug.WriteLine("Forgot: User does not exist - lying to the user");
-        //                return View("ForgotConfirmation");
-        //            }
-
-        //            // If we found a user and it's valid, then work out the code and send
-        //            // it via email.
-        //            var code = await UserManager.GeneratePasswordResetTokenAsync(user);
-        //            Debug.WriteLine("Forgot: Code = " + code);
-        //            var callBackUrl = Url.Action("ResetPassword", "Account",
-        //                new { userId = user.Id, code = code },
-        //                protocol: Context.Request.Scheme);
-        //            Debug.WriteLine("Forgot: Link = " + callBackUrl);
-        //            await EmailService.Instance.SendEmailAsync(model.Email, "Reset Password",
-        //                "We received a request to reset your password.  If you did not request a " +
-        //                "password change, then please dis-regard this email with our apologies.\n\n" +
-        //                "To reset your password, click here: <a href=\"" + callBackUrl + "\">link</a>");
-        //            return View("ForgotConfirmation");
-        //        }
-
-        //        // If the model was not valid, re-display the form
-        //        return View(model);
-        //    }
-
-
-        //}
-
-        //[AllowAnonymous]
-        //public ActionResult ResetPass(string returnUrl)
-        //{
-        //    ViewBag.ReturnUrl = returnUrl;
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ResetPass(UserLogin user, string returnUrl)
-        //{
-        //    if (WebSecurity.UserExists(model.UserName))
-        //    {
-        //        string ptoken = WebSecurity.GeneratePasswordResetToken(model.UserName, 190);
-        //        //change to be as secure as you choose
-        //        string tmpPass = Membership.GeneratePassword(10, 4);
-        //        WebSecurity.ResetPassword(ptoken, tmpPass);
-        //        //add your own email logic here
-        //        ViewData["msg"] = "Your new password is: " + tmpPass;
-        //        return View();
-        //    }
-        //    else
-        //    {
-        //        ModelState.AddModelError("", "The user name wasn't found.");
-        //    }
-
-        //    return View();
-        //}
-
-
-        //        [HttpGet]
-        //        [AllowAnonymous]
-        //        public ActionResult Forgot()
-        //        {
-        //            return View();
-        //        }
-
-
-        //        [HttpPost]
-        // [AllowAnonymous]
-        // [ValidateAntiForgeryToken]
-        // public async Task<ActionResult> Forgot(ownForgetPassModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        Debug.WriteLine("Forgot: Checking for user ID = " + model.Email);
-        //        var user = await UserController.FindByNameAsync(model.Email);
-        //        // If the user does not exist or the user has not confirmed their email,
-        //        // then say we confirmed, but don't actually do anything.
-        //        if (user == null || !(await UserController.IsEmailConfirmedAsync(user)))
-        //        {
-        //            Debug.WriteLine("Forgot: User does not exist - lying to the user");
-        //            return View("ForgotConfirmation");
-        //        }
-
-        //        // If we found a user and it's valid, then work out the code and send
-        //        // it via email.
-        //        var code = await UserController.GeneratePasswordResetTokenAsync(user);
-        //        Debug.WriteLine("Forgot: Code = " + code);
-        //        var callBackUrl = Url.Action("ResetPassword", "Account",
-        //            new { userId = user.Id, code = code },
-        //            protocol: Context.Request.Scheme);
-        //        Debug.WriteLine("Forgot: Link = " + callBackUrl);
-        //        await EmailService.Instance.SendEmailAsync(model.Email, "Reset Password",
-        //            "We received a request to reset your password.  If you did not request a " +
-        //            "password change, then please dis-regard this email with our apologies.\n\n" +
-        //            "To reset your password, click here: <a href=\"" + callBackUrl + "\">link</a>");
-        //        return View("ForgotConfirmation");
-        //    }
-
-        //    // If the model was not valid, re-display the form
-        //    return View(model);
-        //}
-
-
-        //    [AllowAnonymous]
-        //    public ActionResult ResetPass(string returnUrl)
-        //    {
-        //        ViewBag.ReturnUrl = returnUrl;
-        //        return View();
-        //    }
-
-        //    [HttpPost]
-        //    [AllowAnonymous]
-        //    [ValidateAntiForgeryToken]
-        //    public ActionResult ResetPass(UserLogin model, string returnUrl)
-        //    {
-        //        if (WebSecurity.UserExists(model.UserName))
-        //        {
-        //            string ptoken = WebSecurity.GeneratePasswordResetToken(model.UserName, 190);
-        //            //change to be as secure as you choose
-        //            string tmpPass = Membership.GeneratePassword(10, 4);
-        //            WebSecurity.ResetPassword(ptoken, tmpPass);
-        //            //add your own email logic here
-        //            ViewData["msg"] = "Your new password is: " + tmpPass;
-        //            return View(model);
-        //        }
-        //        else
-        //        {
-        //            ModelState.AddModelError("", "The user name wasn't found.");
-        //        }
-
-        //        return View(model);
-        //    }
-
-
-        //}
+ 
     }
 }

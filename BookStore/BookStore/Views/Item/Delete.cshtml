@@ -5,7 +5,8 @@
 }
 
 <h2>Delete</h2>
-
+@if (System.Web.HttpContext.Current.User.IsInRole("Admin"))
+{
 <h3>Are you sure you want to delete this?</h3>
 <div>
     <h4>Item</h4>
@@ -70,3 +71,8 @@
         </div>
     }
 </div>
+}
+else
+{
+    <p>You do not have the permission to view this page!</p>
+}
