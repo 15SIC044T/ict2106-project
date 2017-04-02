@@ -411,7 +411,7 @@ namespace BookStore.Controllers
                             ModelState.AddModelError("", account.uEmail + " already taken.");
                         }
                     else
-                        if (result && resultemail)
+                        if (result == false && resultemail == false)
                         {
                             reg.Email = account.uEmail;
                             reg.Premiumuser = account.uPremiumUser;

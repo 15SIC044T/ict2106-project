@@ -53,6 +53,8 @@
     }
     else
     {
+        int count = 0;
+        List<bool> itemCheck = ViewBag.check;
         foreach (var item in Model)
         {
             <tr>
@@ -74,14 +76,32 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.iQuantity)
+
+                    @if (item.iQuantity == 0)
+                    {
+                        <p style="color: red">Item out of stock!</p>
+                    }
                 </td>
                 <td> 
-                    @Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.itemID }, null) |
+                    @if (item.iQuantity != 0 && itemCheck != null)
+                    {
+                        if (itemCheck[count] == false)
+                        {
+                            @Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.itemID }, null) <span> | </span>
+                        }
+                        else
+                        {
+                            <span style="color: red;">Already in cart</span> <span> | </span>
+                        }
+                    }  
+
+                    <!--Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.itemID }, null) |  -->                                                      
                     @Html.ActionLink("Edit", "Edit", new { id = item.itemID }) |
                     @Html.ActionLink("Details", "Details", new { id = item.itemID }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.itemID })
                 </td>
             </tr>
+            count++;
         }
     }
 

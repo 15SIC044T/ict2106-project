@@ -22,6 +22,9 @@
         <th></th>
     </tr>
 
+@{int count = 0;
+    bool checkout = true;
+    List<bool> itemCheck = ViewBag.check; }
 @foreach (var item in Model) {
 
     if (item.cartItems.Count == 0)
@@ -38,8 +41,18 @@
             @Html.DisplayFor(modelItem => itemValue.iName)
 
         </td>
-        <td>
+        <td> 
             @Html.DisplayFor(modelItem => cartItemValue.quantity)
+
+            @if (itemCheck != null)
+            {
+                if (itemCheck[count] == false)
+                {
+                    <p style="color: red">Item not available!</p>
+                    checkout = false;
+                }
+            }
+
         </td>
         <td>
             @Html.DisplayFor(modelItem => cartItemValue.price)
@@ -49,7 +62,8 @@
             @Html.ActionLink("Delete", "RemoveFromCart", new { id= cartItemValue.itemID })
         </td>
     </tr>
-    }
+            count++;
+        }
     <tr>
         <td><strong>SubTotal</strong></td>
         <td><strong>Discount</strong></td>
@@ -65,8 +79,21 @@
          </tr>
 
         <tr>
-            <td colspan="4" style="text-align: right;"><button type="button"onclick="location.href='Cart/OrderSummary';">Check Out</button></td>
-            </tr>
+            <td colspan="4" style="text-align: right;">
+            
+                <!-- If all item is available, then check out -->
+                @if (checkout)
+                {
+                <button type="button"onclick="location.href='Cart/OrderSummary';">Check Out</button>
+                }
+                else
+                {
+                    <p style="color: red;">Item cannot be checkout because its not available! Consider delete before checkout!</p>
+                    <button type="button" onclick="location.href='Cart/OrderSummary';" disabled>Check Out</button>
+                }
+
+            </td>
+            </tr> 
     }
 }
 </table>

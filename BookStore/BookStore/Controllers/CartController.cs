@@ -24,7 +24,7 @@ namespace BookStore.Controllers
         [Authorize]
         public ActionResult Index()
         { 
-            updateSession();
+            updateSession(); 
 
             //Create a new cart if the cart is empty 
             if (Convert.ToInt32(Session["currentCart"]) == 0)
@@ -38,8 +38,7 @@ namespace BookStore.Controllers
                 //After create a new cart, get and assign current cart to session
 
                 string cartUserID = Session["userID"].ToString();
-
-                //var currentCart = db.Carts.SingleOrDefault(c => c.cartUserID.Equals(cartUserID) && c.dateOfPurchase.Equals(null));
+                 
                 Session["currentCart"] = newCart.cartID; 
                 var updateUser = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
                 updateUser.currentCart = newCart.cartID;
@@ -54,8 +53,9 @@ namespace BookStore.Controllers
 
             List<Item> itemList = new List<Item>();
             List<bool> checkItemAvailable = new List<bool>();
-             
+
             //Get all the item details and store it in the list;
+            List<bool> itemListCheck = new List<bool>();
             IIterator<CartItem> iter = new IteratorGeneric<CartItem>(cartItemList);
             while (!iter.IsDone())
             {
@@ -63,6 +63,10 @@ namespace BookStore.Controllers
                 if (newItemID != null)
                 {
                     Item item = db.Items.SingleOrDefault(x => x.itemID == newItemID);
+                    if (item.iQuantity < iter.current().quantity)
+                        itemListCheck.Add(false);
+                    else
+                        itemListCheck.Add(true);
                     itemList.Add(item);
                     
                     iter.Next();
@@ -71,6 +75,8 @@ namespace BookStore.Controllers
 
             //Create a new model to contain all the data.. 
             List<CartViewModels> viewModel = new List<CartViewModels>();
+            
+                var updateUsers = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
 
             var cartData = new CartViewModels();
             var cartDataCarts = new Cart();
@@ -78,16 +84,28 @@ namespace BookStore.Controllers
             cartData.cartItems = cartItemList;
             cartData.items = itemList;
 
+            double discountPercent = 0;
+            double deliveryCharge = 20;
+            if (System.Web.HttpContext.Current.User.IsInRole("PremiumUser")) {
+                discountPercent = 20;
+                deliveryCharge = 0;
+            }
+            else if (System.Web.HttpContext.Current.User.IsInRole("BasicUser")) {
+                discountPercent = 10; 
+            } 
+
             //Set default carts values
-            cartDataCarts.gst = 7;
-            cartDataCarts.discountAmount = 0;
-            cartDataCarts.discountPercent = 0;
+            cartDataCarts.gst = 7; 
+            cartDataCarts.discountPercent = discountPercent; 
             cartDataCarts.subTotal = Convert.ToDouble(db.CartItems.AsEnumerable().Where(x => x.cartID == currentCartID).Sum(x => x.price));
-            cartDataCarts.totalPrice = cartDataCarts.subTotal + (cartDataCarts.subTotal * cartDataCarts.gst / 100 * cartDataCarts.discountPercent / 100);
+            cartDataCarts.discountAmount = cartDataCarts.subTotal * cartDataCarts.discountPercent / 100.0;
+            cartDataCarts.deliveryCharge = deliveryCharge;
+            cartDataCarts.totalPrice = (cartDataCarts.subTotal + deliveryCharge - cartDataCarts.discountAmount) * (1 + (cartDataCarts.gst / 100.0));
+              
             cartData.carts = cartDataCarts;
 
             viewModel.Add(cartData);
-
+            ViewBag.check = itemListCheck;
             return View(viewModel);
 
         }
@@ -146,8 +164,7 @@ namespace BookStore.Controllers
 
 
         public void updateSession()
-        {
-           
+        { 
             if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
             { 
                 Session["username"] = System.Web.HttpContext.Current.User.Identity.Name;
