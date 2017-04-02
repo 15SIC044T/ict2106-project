@@ -13,11 +13,14 @@ namespace BookStore.Models
     {
         [Key]
         public int reviewID { get; set; }
+        [Display(Name = "Item:")]
+        public string itemID { get; set; }
 
-        public int itemID { get; set; }
+        [Display(Name = "ReviewerID:")]
+        public string reviewerID { get; set; }
+
         [Display(Name = "Reviewer:")]
-        [Required(ErrorMessage = "Reviewer ID is required")]
-        public int reviewerID { get; set; }
+        public string reviewerName { get; set; }
 
         [Display(Name = "Date:")]
         [DataType(DataType.Date)]
@@ -32,7 +35,7 @@ namespace BookStore.Models
 
         [Display(Name = "Rating:")]
         [Required(ErrorMessage = "Rating is required")]
-        [Range(1, 5, ErrorMessage = "Can only be between 0 to 5")]
+        [Range(1, 5, ErrorMessage = "Can only be between 1 to 5")]
         public int reviewRating { get; set; }
     }
 }

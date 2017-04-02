@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.Mvc;
 using BookStore.DAL;
 using BookStore.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace BookStore.Controllers
 {
@@ -22,14 +24,16 @@ namespace BookStore.Controllers
          }
 
         // GET: Reviews
-        public ActionResult Index(int? itemID)
+        public ActionResult Index(int? itemID, string itemName)
         {
+            updateSession();
+            Session["itemName"] = itemName;
             if (itemID != null)
             {
                 //return View(db.Reviews.ToList());
+                TempData["reviewItemID"] = itemID;
                 int value = itemID.GetValueOrDefault();
-                TempData["reviewItemID"] = (int)itemID;
-                return View(((ReviewGateway)dataGateway).SelectReviewByItemID(value));
+                return View(((ReviewGateway)dataGateway).SelectReviewByItemID(itemID.ToString()));
             }
             else
             {
@@ -38,28 +42,36 @@ namespace BookStore.Controllers
         }
 
         // GET: Reviews/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int? reviewID, int? itemID)
         {
-            if (id == null)
+            if (reviewID == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Review review = db.Reviews.Find(id);
+            Review review = db.Reviews.Find(reviewID);
             if (review == null)
             {
                 return HttpNotFound();
             }
+            TempData["reviewItemID"] = itemID;
             return View(review);
         }
 
         // GET: Reviews/Create
         public ActionResult Create(int? itemID)
         {
+            TempData["reviewItemID"] = itemID;
+            //ApplicationUser user = updateSession();
+            TempData["TEST"] = itemID;
+            int testing = itemID.GetValueOrDefault();
+            TempData["TEST2"] = testing;
             if (itemID != null)
             {
                 Review review = new Models.Review();
-                //review.reviewerID = 1;      
-                review.itemID = (int)itemID;
+                review.itemID = itemID.ToString();
+                updateSession();
+                review.reviewerID = Session["userID"].ToString();
+                review.reviewerName = Session["username"].ToString();
                 review.reviewDate = DateTime.Today;
                 return View(review);
             }
@@ -74,30 +86,40 @@ namespace BookStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "reviewID,reviewerID,reviewDate,reviewDescription,reviewRating")] Review review)
+        public ActionResult Create([Bind(Include = "reviewID,itemID,reviewerID,reviewerName,reviewDate,reviewDescription,reviewRating")] Review review)
         {
             if (ModelState.IsValid)
             {
-                db.Reviews.Add(review);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                dataGateway.Insert(review);
+                return RedirectToAction("Index",new { itemID = review.itemID , itemName = Session["itemName"] });
             }
 
             return View(review);
         }
 
-        // GET: Reviews/Edit/5
-        public ActionResult Edit(int? id)
+        public void updateSession()
         {
-            if (id == null)
+            if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            {
+                Session["username"] = System.Web.HttpContext.Current.User.Identity.Name;
+                var userObj = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
+
+                Session["userID"] = userObj.Id;
+            }
+        }
+        // GET: Reviews/Edit/5
+        public ActionResult Edit(int? reviewID, int? itemID)
+        {
+            if (reviewID == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Review review = db.Reviews.Find(id);
+            Review review = db.Reviews.Find(reviewID);
             if (review == null)
             {
                 return HttpNotFound();
             }
+            TempData["reviewItemID"] = itemID;
             return View(review);
         }
 
@@ -106,41 +128,42 @@ namespace BookStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "reviewID,reviewerID,reviewDate,reviewDescription,reviewRating")] Review review)
+        public ActionResult Edit([Bind(Include = "reviewID,itemID,reviewerID,reviewerName,reviewDate,reviewDescription,reviewRating")] Review review)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(review).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                dataGateway.Update(review);
+                return RedirectToAction("Index", new { itemID = review.itemID, itemName = Session["itemName"] });
             }
+            TempData["reviewItemID"] = review.reviewID;
             return View(review);
         }
 
         // GET: Reviews/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? reviewID, int? itemID)
         {
-            if (id == null)
+            if (reviewID == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Review review = db.Reviews.Find(id);
+            Review review = db.Reviews.Find(reviewID);
             if (review == null)
             {
                 return HttpNotFound();
             }
+            TempData["reviewItemID"] = itemID;
             return View(review);
         }
 
         // POST: Reviews/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int reviewID)
         {
-            Review review = db.Reviews.Find(id);
+            Review review = db.Reviews.Find(reviewID);
             db.Reviews.Remove(review);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { itemID = review.itemID });
         }
 
         protected override void Dispose(bool disposing)

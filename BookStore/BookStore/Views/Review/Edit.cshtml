@@ -14,8 +14,12 @@
         <h4>Review</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.reviewID)
 
+        @Html.HiddenFor(model => model.reviewID)
+        @Html.HiddenFor(model => model.reviewerID)
+        @Html.HiddenFor(model => model.reviewerName)    
+        @Html.HiddenFor(model => model.reviewDate)
+        @Html.HiddenFor(model => model.itemID)
         <div class="form-group">
             @Html.LabelFor(model => model.reviewDescription, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -41,5 +45,5 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to List", "Index", "Review", new { itemID = TempData["reviewItemID"], itemName = Session["itemName"] }, null)
 </div>
