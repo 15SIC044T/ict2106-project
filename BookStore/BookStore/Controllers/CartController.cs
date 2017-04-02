@@ -18,33 +18,16 @@ namespace BookStore.Controllers
     {
         private UserGateway userGateway = new UserGateway();
         private CartGateway cartGateway = new CartGateway();
+        private ItemGateway itemGateway = new ItemGateway();
         private CartItemGateway cartItemGateway = new CartItemGateway();
         private BookStoreContext db = new BookStoreContext(); 
          
         [Authorize]
         public ActionResult Index()
         { 
-            updateSession(); 
+            updateSession();
 
-            //Create a new cart if the cart is empty 
-            if (Convert.ToInt32(Session["currentCart"]) == 0)
-            {
-                //Create a new cart
-                Cart newCart = new Cart();
-                newCart.cartUserID = Session["userID"].ToString();
-                cartGateway.Insert(newCart);
-
-                //After create a new cart, get and assign current cart to applicationUser
-                //After create a new cart, get and assign current cart to session
-
-                string cartUserID = Session["userID"].ToString();
-                 
-                Session["currentCart"] = newCart.cartID; 
-                var updateUser = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
-                updateUser.currentCart = newCart.cartID;
-                userGateway.Update(updateUser);
-
-            }
+            createNewCart();
 
             //Get a MAIN single cart ID
             //Get all the cart items   
@@ -195,14 +178,16 @@ namespace BookStore.Controllers
                 int? newItemID = iter.current().itemID;
                 if (newItemID != null)
                 {
-                    itemList.Add(db.Items.SingleOrDefault(x => x.itemID == newItemID));
+                    Item newItem = db.Items.SingleOrDefault(x => x.itemID == newItemID);
+                    itemList.Add(newItem);
+
+                    //Minus Item Quantity
+                    newItem.iQuantity -= 1;
+                    itemGateway.Update(newItem);
+
                     iter.Next();
                 }
-            }
-
-            //check all item is available for purchase
-
-
+            } 
 
             //Create a new model to contain all the data..
 
@@ -213,25 +198,66 @@ namespace BookStore.Controllers
             cartData.cartItems = cartItemList;
             cartData.items = itemList;
 
+            double discountPercent = 0;
+            double deliveryCharge = 20;
+            if (System.Web.HttpContext.Current.User.IsInRole("PremiumUser"))
+            {
+                discountPercent = 20;
+                deliveryCharge = 0;
+            }
+            else if (System.Web.HttpContext.Current.User.IsInRole("BasicUser"))
+            {
+                discountPercent = 10;
+            }
+
             //Set default carts values
             cartData.carts.gst = 7;
-            cartData.carts.discountAmount = 0;
-            cartData.carts.discountPercent = 0;
+            cartData.carts.discountPercent = discountPercent;
             cartData.carts.subTotal = Convert.ToDouble(db.CartItems.AsEnumerable().Where(x => x.cartID == currentCartID).Sum(x => x.price));
-            cartData.carts.totalPrice = cartData.carts.subTotal + (cartData.carts.subTotal * cartData.carts.gst / 100 * cartData.carts.discountPercent / 100);
-            cartData.carts.dateOfPurchase = DateTime.Now;
-             
-                //Update carts value to existing cart
-                cartGateway.Update(cartData.carts);
+            cartData.carts.discountAmount = cartData.carts.subTotal * cartData.carts.discountPercent / 100.0;
+            cartData.carts.deliveryCharge = deliveryCharge;
+            cartData.carts.totalPrice = (cartData.carts.subTotal + deliveryCharge - cartData.carts.discountAmount) * (1 + (cartData.carts.gst / 100.0));
+            cartData.carts.dateOfPurchase = DateTime.Today;
+
+            //Update carts value to existing cart
+            cartGateway.Update(cartData.carts);
 
                 //Clear current user shopping cart
                 Session["currentCart"] = 0;
                 var updateUser = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
                 updateUser.currentCart = 0;
-                userGateway.Update(updateUser); 
+                userGateway.Update(updateUser);
+
+
+            createNewCart();
+
 
             viewModel.Add(cartData); 
             return View();
+        }
+
+        public void createNewCart()
+        {
+            //Create new shopping cart
+            //Create a new cart if the cart is empty 
+            if (Convert.ToInt32(Session["currentCart"]) == 0)
+            {
+                //Create a new cart
+                Cart newCart = new Cart();
+                newCart.cartUserID = Session["userID"].ToString();
+                cartGateway.Insert(newCart);
+
+                //After create a new cart, get and assign current cart to applicationUser
+                //After create a new cart, get and assign current cart to session
+
+                string cartUserID = Session["userID"].ToString();
+
+                Session["currentCart"] = newCart.cartID;
+                var updateUser = db.Users.Single(x => x.Username == System.Web.HttpContext.Current.User.Identity.Name);
+                updateUser.currentCart = newCart.cartID;
+                userGateway.Update(updateUser);
+
+            } 
         }
 
         [Authorize]

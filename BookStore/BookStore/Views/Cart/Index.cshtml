@@ -66,13 +66,13 @@
         }
     <tr>
         <td><strong>SubTotal</strong></td>
-        <td><strong>Discount</strong></td>
+        <td><strong>Discount Amount (Percentage)</strong></td>
         <td><strong>GST</strong></td>
         <td><strong>Total</strong></td>
         </tr>
     <tr> 
          <td>$@Html.DisplayFor(modelItem => item.carts.subTotal)</td>
-        <td>$@Html.DisplayFor(modelItem => item.carts.discountAmount) - 
+        <td>$@Html.DisplayFor(modelItem => item.carts.discountAmount)
         (@Html.DisplayFor(modelItem => item.carts.discountPercent) %)</td>
         <td>@Html.DisplayFor(modelItem => item.carts.gst)</td>
         <td><strong>$@Html.DisplayFor(modelItem => item.carts.totalPrice)</strong></td>
@@ -81,6 +81,7 @@
         <tr>
             <td colspan="4" style="text-align: right;">
             
+                <p>Delivery Charge: $@Html.DisplayFor(modelItem => item.carts.deliveryCharge)</p>
                 <!-- If all item is available, then check out -->
                 @if (checkout)
                 {
