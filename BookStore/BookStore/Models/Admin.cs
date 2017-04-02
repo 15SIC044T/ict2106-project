@@ -5,7 +5,7 @@ using System.Web;
 
 namespace BookStore.Models
 {
-    public class Admin : User 
+    public class Admin : User
     {
     }
 }
