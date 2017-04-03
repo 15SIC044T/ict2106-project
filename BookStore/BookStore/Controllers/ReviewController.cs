@@ -25,9 +25,15 @@ namespace BookStore.Controllers
 
         // GET: Reviews
         public ActionResult Index(int? itemID, string itemName)
-        {
+        { 
             updateSession();
-            Session["itemName"] = itemName;
+
+            Item item = db.Items.SingleOrDefault(x=> x.itemID == itemID);
+
+            if (itemName == null)
+                Session["itemName"] = item.iName;
+            else
+                Session["itemName"] = itemName;
             if (itemID != null)
             {
                 //return View(db.Reviews.ToList());
