@@ -222,6 +222,7 @@
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\CartViewModels.cs" />
     <Compile Include="Models\FeedbackCreatorSingleton.cs" />
+    <Compile Include="Models\FeedbackResults.cs" />
     <Compile Include="Models\Feedback\Feedback.cs" />
     <Compile Include="Models\Feedback\FeedbackBuilder.cs" />
     <Compile Include="Models\Feedback\FeedbackElement.cs" />
@@ -402,7 +403,7 @@
     <Content Include="Views\Cart\OrderDetails.cshtml" />
     <Content Include="Views\Feedback\Index.cshtml" />
     <Content Include="Views\FeedbackCreate\Index.cshtml" />
-    <Content Include="Views\Feedback\Results.cshtml" />
+    <Content Include="Views\Feedback\Submit.cshtml" />
     <Content Include="Views\Shared\Results.cshtml" />
     <Content Include="Views\FeedbackCreate\IndexTest.cshtml" />
     <Content Include="Views\FeedbackCreate\Submit.cshtml" />

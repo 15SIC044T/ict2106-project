@@ -39,9 +39,8 @@ namespace BookStore.Controllers
             // finished building
             builder.CloseDocument();
 
-        
             //return View("~/Views/Feedback/Results", builder.GetDocument().GetString());
-            return View("~/Views/FeedbackCreate/Submit", builder.GetDocument().GetString());
+            return View("~/Views/Feedback/Submit", builder.GetDocument().GetString());
         }
     }
 }
