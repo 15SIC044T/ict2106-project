@@ -3,20 +3,22 @@
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <img src="~/Content/images/bookstore.png" />
+<div class="col-md-12">
+    <img style="width:100%; height:auto;" src="~/Content/images/bookstore.png" />
 </div>
-
+<br />
+<br />
 <div class="row">
     <div class="col-md-12">
-        <table>
+        <h3><label> Recommended books:</label></h3>
+        <table style="align-content:center">
             <tr>
                 @foreach(var item in Model)
                 {
-                    <td>
+                    <td style="padding:20px; align-content:center;">
                         @{
-                            <img src="/@Html.DisplayFor(modelItem => item.iImage)" alt="" height=150 width=100 /><br>
-                            @Html.DisplayFor(modelItem => item.iName)
+                            <img style="align-items:center;" src="/@Html.DisplayFor(modelItem => item.iImage)" alt="" height=150 width=100 /><br>
+                            <label style="padding-top:5px; font-style:oblique;">@Html.DisplayFor(modelItem => item.iName)</label>
                         }
                     </td>
                 }

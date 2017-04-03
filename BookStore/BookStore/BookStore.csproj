@@ -408,12 +408,9 @@
     <Content Include="Views\FeedbackCreate\Index.cshtml" />
     <Content Include="Views\Feedback\Results.cshtml" />
     <Content Include="Views\Shared\Results.cshtml" />
-    <Content Include="Views\FeedbackCreate\IndexTest.cshtml" />
-    <Content Include="Views\FeedbackCreate\Submit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\themes\User\" />
-    <Folder Include="Views\FeedbackResults\" />
     <Folder Include="Views\Recommended\" />
   </ItemGroup>
   <ItemGroup>

@@ -2,28 +2,37 @@
     ViewBag.Title = "Feedback";
 }
 
-<div class="col-sm-12">
-    <form method="get" action="/Feedback/Submit">
-        <div class="jumbotron">
-            <h3><label name="output">We'd like to hear more from you!</label></h3>
-            <p>
-                Choose a type of feedback:
-            </p>
-            <p>
-                <input type="radio" name="format" value="feedback" /> Suggestions on general matters
-                <br />
-                <input type="radio" name="format" value="feedback" /> Suggestion to bring in a new book
-            </p>
+@if (System.Web.HttpContext.Current.User.IsInRole("Admin"))
+{
+    <div class="col-sm-12">
+        <!--List-->
+    </div>
+}
+else
+{
+    <div class="col-sm-12">
+        <form method="get" action="/Feedback/Submit">
+            <div class="jumbotron">
+                <h3><label name="output">We'd like to hear more from you!</label></h3>
+                <p>
+                    Choose a type of feedback:
+                </p>
+                <p>
+                    <input type="radio" name="format" value="feedback" /> Suggestions on general matters
+                    <br />
+                    <input type="radio" name="format" value="feedback" /> Recommend us a book to bring in
+                </p>
 
-            <p>
-                <input type="hidden" name="pattern" checked="checked" value="feedbackbuilder" />
-                <br />
-            </p>
-        </div>
-        <div class="col-sm-11">
-        </div>
-        <div class="col-sm-1">
-            <input type="submit" value="Next" />
-        </div>
-    </form>
-</div>
+                <p>
+                    <input type="hidden" name="pattern" checked="checked" value="feedbackbuilder" />
+                    <br />
+                </p>
+            </div>
+            <div class="col-sm-11">
+            </div>
+            <div class="col-sm-1">
+                <input type="submit" value="Next" />
+            </div>
+        </form>
+    </div>
+}
