@@ -193,6 +193,8 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ItemController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\RequestAbstractFactoryController.cs" />
+    <Compile Include="Controllers\RequestBuilderController.cs" />
     <Compile Include="Controllers\RequestController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -222,11 +224,23 @@
     <Compile Include="Models\CartViewModels.cs" />
     <Compile Include="Models\forgotPass.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\IHeading.cs" />
+    <Compile Include="Models\IParagraph.cs" />
+    <Compile Include="Models\IRequestDocument.cs" />
+    <Compile Include="Models\IRequestDocumentBuilder.cs" />
+    <Compile Include="Models\IRequestDocumentFactory.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PremiumUser.cs" />
     <Compile Include="Models\RecommendedList.cs" />
     <Compile Include="Models\RegisterUser.cs" />
+    <Compile Include="Models\RequestDocumentCreatorSingleton.cs" />
+    <Compile Include="Models\Requests\RequestDocument.cs" />
+    <Compile Include="Models\Requests\RequestDocumentBuilder.cs" />
+    <Compile Include="Models\Requests\RequestDocumentFactory.cs" />
+    <Compile Include="Models\Requests\RequestElement.cs" />
+    <Compile Include="Models\Requests\RequestHeading.cs" />
+    <Compile Include="Models\Requests\RequestParagraph.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserChangePassword.cs" />
@@ -393,10 +407,12 @@
     <Content Include="Views\User\RegisterPage.cshtml" />
     <Content Include="Views\Cart\OrderHistory.cshtml" />
     <Content Include="Views\Cart\OrderDetails.cshtml" />
+    <Content Include="Views\Request\Index.cshtml" />
+    <Content Include="Views\RequestBuilder\Index.cshtml" />
+    <Content Include="Views\RequestBuilder\Submit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\themes\User\" />
-    <Folder Include="Views\Request\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

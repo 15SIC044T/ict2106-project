@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "FeedbackBuilder";
+    var outputFormat = ViewData["Format"];
+}
+
+<div class="col-sm-12">
+    <form method="get" action="/RequestBuilder/Submit">
+
+        <!-- save the output format in a hidden field-->
+        <input type="hidden" name="format" value="@outputFormat" />
+
+        <!-- document title -->
+        <h3><label name="output">Bring in this book!</label></h3>
+        <br />
+        <br />
+        <p>
+            <label name="titleText">Title:</label>
+            <br />
+            <input type="text" name="titleText" size="150" value="" />
+        </p>
+
+        <!-- document author -->
+        <p>
+            <label name="authorText">Author:</label>
+            <br />
+            <input type="text" name="authorText" size="150" value="" />
+        </p>
+
+        <!-- document body -->
+        <p>
+            <label name="bodyText">Sypnosis:</label>
+            <br />
+            <textarea name="bodyText" rows="10" cols="150"></textarea>
+        </p>
+
+        <input type="submit" value="Submit" />
+
+    </form>
+</div>

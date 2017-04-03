@@ -1,0 +1,40 @@
+﻿
+@{
+    ViewBag.Title = "Request";
+}
+
+<h2>Recommend us a book!</h2>
+
+@if (System.Web.HttpContext.Current.User.IsInRole("Admin"))
+{
+    <div class="col-sm-12">
+        <!--List-->
+    </div>
+}
+else
+{
+    <div class="col-sm-12">
+        <form method="get" action="/Request/Submit">
+            <div class="jumbotron">
+                <h3><label name="output">Sorry that we don't have the book you wanted...</label></h3>
+                <br />
+                <p>
+                    To serve you better, we'd like to know the book that you're looking for. Click "Next" to recommend us a book. 
+                </p>
+                <p>
+                    <br />
+                    <input type="hidden" name="format" checked="checked" value="request" /> 
+                </p>
+                <p>
+                    <input type="hidden" name="pattern" checked="checked" value="requestbuilder" />
+                    <br />
+                </p>
+            </div>
+            <div class="col-sm-11">
+            </div>
+            <div class="col-sm-1">
+                <input type="submit" value="Next" />
+            </div>
+        </form>
+  </div>
+}
