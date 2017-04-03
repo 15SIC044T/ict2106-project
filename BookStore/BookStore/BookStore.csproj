@@ -193,6 +193,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ItemController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\RequestController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DAL\CartGateway.cs" />
@@ -224,6 +225,7 @@
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PremiumUser.cs" />
+    <Compile Include="Models\RecommendedList.cs" />
     <Compile Include="Models\RegisterUser.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\User.cs" />
@@ -394,6 +396,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\themes\User\" />
+    <Folder Include="Views\Request\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
